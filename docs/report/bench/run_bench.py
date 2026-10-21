@@ -34,6 +34,7 @@ PROBLEMS = {
     "sieve": [("Vulp", "vulp", "sieve.vp"), ("C++", "cpp", "sieve.cpp"), ("Python", "py", "sieve.py")],
     "sort_io": [("Vulp", "vulp", "sort_io.vp"), ("C++", "cpp", "sort_io.cpp"), ("Python", "py", "sort_io.py")],
     "lcs": [("Vulp (dp fn)", "vulp", "lcs_dp.vp"), ("Vulp (table)", "vulp", "lcs_table.vp"),
+            ("Vulp (i32 table)", "vulp", "lcs_table_i32.vp"),
             ("C++ (table)", "cpp", "lcs.cpp"), ("C++ (memo)", "cpp", "lcs_memo.cpp"), ("Python", "py", "lcs.py")],
     "dijkstra": [("Vulp", "vulp", "dijkstra.vp"), ("C++", "cpp", "dijkstra.cpp"), ("Python", "py", "dijkstra.py")],
     "testcases": [("Vulp", "vulp", "testcases.vp"), ("C++", "cpp", "testcases.cpp"), ("Python", "py", "testcases.py")],
@@ -118,7 +119,7 @@ def tool_versions(vulpc):
         "g++": first_line(["g++", "--version"]),
         "python": platform.python_implementation() + " " + platform.python_version(),
         "llvm": first_line(["llvm-config-18", "--version"]),
-        "vulpc": os.path.relpath(vulpc, ROOT),
+        "vulpc": os.path.basename(vulpc),
     }
 
 
@@ -127,6 +128,8 @@ def main():
     ap.add_argument("--vulpc", default=os.path.join(ROOT, "build", "vulpc"))
     ap.add_argument("--runs", type=int, default=7)
     ap.add_argument("--cpu", type=int, default=7, help="CPU to pin runs to (-1: no pinning)")
+    ap.add_argument("--output", default=os.path.join(HERE, "results.json"),
+                    help="write results to this JSON file")
     ap.add_argument("problems", nargs="*")
     args = ap.parse_args()
     cpu = None if args.cpu < 0 else args.cpu
@@ -182,7 +185,7 @@ def main():
         prob["output_sha256"] = reference
         results["problems"][name] = prob
 
-    path = os.path.join(HERE, "results.json")
+    path = os.path.abspath(args.output)
     if args.problems and os.path.exists(path):   # partial run: merge into the existing results
         old = json.load(open(path))
         old["problems"].update(results["problems"])

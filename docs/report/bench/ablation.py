@@ -6,6 +6,7 @@
 Results go to ablation.json.
 """
 import json
+import argparse
 import os
 import statistics
 import subprocess
@@ -35,6 +36,14 @@ VULPC = os.path.join(rb.ROOT, "build", "vulpc")
 
 
 def main():
+    global RUNS, CPU, VULPC
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--vulpc", default=VULPC)
+    ap.add_argument("--runs", type=int, default=RUNS)
+    ap.add_argument("--cpu", type=int, default=CPU)
+    ap.add_argument("--output", default=os.path.join(rb.HERE, "ablation.json"))
+    args = ap.parse_args()
+    RUNS, CPU, VULPC = args.runs, (None if args.cpu < 0 else args.cpu), os.path.abspath(args.vulpc)
     os.makedirs(rb.OUT, exist_ok=True)
     res = {"checks": [], "widths": []}
     for name, impls in rb.PROBLEMS.items():
@@ -65,7 +74,7 @@ def main():
             t, m = measure([exe], inp, exe + ".out")
             res["widths"].append({"variant": label + tag, "time_s": t, "rss_mib": m})
             print(f"lcs {label + tag:32} {t:.3f}s {m:.1f} MiB", flush=True)
-    with open(os.path.join(rb.HERE, "ablation.json"), "w") as f:
+    with open(os.path.abspath(args.output), "w") as f:
         json.dump(res, f, indent=2)
 
 
