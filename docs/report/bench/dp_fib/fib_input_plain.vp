@@ -1,5 +1,6 @@
-dp fn fib(int n) -> int {
+fn fib(int n) -> int {
     if n <= 1: return n;
     return fib(n - 1) + fib(n - 2);
 }
-println(fib(42));
+read int n;
+println(fib(n));
