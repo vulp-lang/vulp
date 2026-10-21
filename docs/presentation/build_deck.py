@@ -106,7 +106,7 @@ def slide(title, els, notes="", kicker=None):
 def render_figures():
     os.makedirs(IMG, exist_ok=True)
     out = {}
-    for name in ("runtime_vs_cpp", "code_size", "build_time", "lcs_variants"):
+    for name in ("runtime_vs_cpp", "code_size", "build_time"):
         src = os.path.join(REPORT, "figures", name + ".svg")
         dst = os.path.join(IMG, name + ".png")
         subprocess.run(["convert", "-density", "220", src, dst], check=True)
@@ -118,7 +118,10 @@ def render_figures():
 
 def build_slides(fig):
     tc_v, tc_c, tc_p = impl("testcases", lang="vulp"), impl("testcases", lang="cpp"), impl("testcases", lang="py")
-    lcs_dp, lcs_memo = impl("lcs", "Vulp (dp fn)"), impl("lcs", "C++ (memo)")
+    lcs_dp = impl("lcs", "Vulp (dp fn)")
+    lcs_i32 = impl("lcs", "Vulp (i32 table)")
+    lcs_cpp = impl("lcs", "C++ (table)")
+    lcs_memo = impl("lcs", "C++ (memo)")
     builds_v = [i["compile_s"] for p in res["problems"].values() for i in p["impls"] if i["lang"] == "vulp"]
     builds_c = [i["compile_s"] for p in res["problems"].values() for i in p["impls"] if i["lang"] == "cpp"]
     S = []
@@ -245,23 +248,24 @@ def build_slides(fig):
                 if n <= 1: return n;
                 return fib(n - 1) + fib(n - 2);
             }
-            println(fib(42));
+            read int n;
+            println(fib(n));
             """, 15),
-        *STAT(0.6, 3.95, 2.9, 1.6, "0.92 s", "fn fib(42): 867 million calls", ORANGE),
-        *STAT(3.7, 3.95, 2.9, 1.6, "< 0.01 s", "dp fn fib(42): 43 states", BLUE),
-        T(0.6, 5.75, 6.0, 0.6, [P("The only difference is the keyword dp.", 16, INK2, space=0)]),
+        *STAT(0.6, 3.95, 2.9, 1.6, "0.198 s", "Vulp plain fib(40)", ORANGE),
+        *STAT(3.7, 3.95, 2.9, 1.6, "1.57 ms", "Vulp dp fn fib(40), 41 states", BLUE),
+        T(0.6, 5.75, 6.0, 0.6, [P("Plain C++: 0.107 s; plain Python: 8.26 s.", 16, INK2, space=0)]),
         T(7.0, 1.5, 5.8, 0.55, [P("Checked by the compiler", 18, INK, bold=True, space=0)]),
         T(7.0, 2.05, 5.8, 2.3, [P("Parameters: integers, chars or bools", 16, INK2, space=8, bullet=True),
                                 P("Result: a scalar", 16, INK2, space=8, bullet=True),
-                                P("No global writes, no I/O — also through callees", 16, INK2, space=8, bullet=True),
+                                P("No global writes or I/O, including through callees", 16, INK2, space=8, bullet=True),
                                 P("May read globals: then its cache is cleared before every testcase, in O(1)", 16, INK2, space=8, bullet=True)]),
         *CODE(7.0, 4.55, 5.75, 1.25, """
             $ vulpc -v examples/08_lcs_testcases.vp
             [vulpc] dp fn lcs: memoised; cache cleared
                     before every TC iteration (reads globals)
             """, 12),
-    ], "dp turns a naive recursion into a memoised one. The compiler proves the function is safe "
-       "to cache and decides whether the cache must be reset between testcases.", "Examples"))
+    ], "For fib(40), dp fn takes 0.00157 s, close to process startup. The compiler checks the "
+       "function's cache rules and resets input-dependent caches between testcases.", "Examples"))
 
     # 6. safety
     S.append(slide("Mistakes caught early, with clear messages", [
@@ -279,7 +283,7 @@ def build_slides(fig):
         T(0.6, 4.55, 6, 0.5, [P("At run time (exit code 1)", 16, INK, bold=True, space=0)]),
         *CODE(0.6, 5.05, 7.2, 0.6, "vulp runtime error (line 3): index 3 out of bounds for length 3", 13),
         T(8.1, 4.95, 4.65, 1.3, [P("Bounds, division by zero, empty pop, end of input, input overflow. "
-                                  "Cost: ≤ 10%; --no-checks removes them.", 15, INK2, space=0)]),
+                                  "Cost: 11% on dense LCS, 0-2% elsewhere.", 15, INK2, space=0)]),
     ], "Type errors, dp purity violations and dangling references are rejected before the program "
        "runs. Runtime errors print the line and stop instead of producing a wrong answer.", "Examples"))
 
@@ -351,19 +355,18 @@ def build_slides(fig):
             P("All outputs byte-identical (SHA-256), or the run aborts", 15, INK, space=8, bullet=True),
             P("Seeded inputs; one script reproduces everything", 15, INK, space=8, bullet=True)]),
     ], "Each problem has a Vulp, C++ and Python version. The harness checks that all of them print "
-       "the same bytes before any time is recorded. Runs are interleaved because the machine is shared.",
+       "the same bytes before timing. Runs are interleaved and pinned to one CPU on the reference laptop.",
         "Evaluation"))
 
     # 10. runtime
-    S.append(slide("Runtime: C++ speed, 4.5–14× faster than Python", [
+    S.append(slide("Runtime: Vulp vs C++ and Python", [
         IMAGE(0.5, 1.45, 8.2, fig["runtime_vs_cpp"]),
         T(9.0, 1.6, 3.8, 5.2, [
-            P("Equal to C++ on sieve, Dijkstra and testcases", 16, INK, space=10, bullet=True),
-            P("10% faster on sort + I/O: Vulp's reader and printer beat untied iostreams", 16, INK, space=10, bullet=True),
-            P("LCS table 1.88×: int (64-bit) vs C++'s 32-bit int; with i32 it is 1.13×", 16, INK, space=10, bullet=True),
-            P("Map 1.46×: values in separate allocations, calls into the runtime", 16, INK, space=10, bullet=True)]),
-    ], "Four of six problems are within 10% of C++. The two gaps are understood: the element width "
-       "in the LCS table, and the map implementation.", "Results"))
+            P("Within 17% of C++ on four tasks", 16, INK, space=10, bullet=True),
+            P("Vulp is 4.6x to 19.5x faster than Python on five tasks", 16, INK, space=10, bullet=True),
+            P("LCS: i32 tables, 1.37x C++ time; about 38 MiB each", 16, INK, space=10, bullet=True),
+            P("Map counting is 1.42x C++ time and nearly equal to Python", 16, INK, space=10, bullet=True)]),
+    ], "Map allocations and LCS table representation account for the largest gaps in these runs.", "Results"))
 
     # 11. code size
     sort_v = impl("sort_io", lang="vulp")
@@ -382,25 +385,30 @@ def build_slides(fig):
        "useful library addition for V2.", "Results"))
 
     # 12. build
-    S.append(slide("Build in 0.1 s, or run straight from source", [
+    S.append(slide("Build in 0.05 s, or run straight from source", [
         IMAGE(0.5, 1.45, 8.2, fig["build_time"]),
         *STAT(9.0, 1.5, 3.75, 1.5, f"{min(builds_v):.2f}–{max(builds_v):.2f} s", "vulpc: build a native executable", BLUE),
         *STAT(9.0, 3.15, 3.75, 1.5, f"{min(builds_c):.2f}–{max(builds_c):.2f} s", "g++ -O2 with <bits/stdc++.h>", ORANGE),
-        *STAT(9.0, 4.8, 3.75, 1.5, "+20–45 ms", "JIT: compile in memory and run", BLUE),
-    ], "About 14× faster builds than g++, mostly because g++ parses all of bits/stdc++.h. "
-       "The JIT adds only tens of milliseconds, so edit-run cycles are instant.", "Results"))
+        *STAT(9.0, 4.8, 3.75, 1.5, "+16-35 ms", "JIT: compile in memory and run", BLUE),
+    ], "Vulp builds take 0.05-0.06 s and the C++ builds take 0.96-1.05 s. The C++ sources "
+       "include bits/stdc++.h. JIT startup adds roughly 16-35 ms to execution.", "Results"))
 
     # 13. dp fn price
-    S.append(slide("The price of dp fn", [
-        IMAGE(0.5, 1.45, 8.2, fig["lcs_variants"]),
-        T(9.0, 1.6, 3.8, 5.2, [
-            P(f"On 9·10⁶ states, dp fn is {lcs_dp['time_s'] / lcs_memo['time_s']:.1f}× slower and "
-              f"{lcs_dp['rss_mib'] / lcs_memo['rss_mib']:.1f}× larger than hand-memoised C++", 16, INK, space=10, bullet=True),
-            P("Causes: byte-wise hashing, two probes per miss, 28-byte entries, rehash on growth", 16, INK, space=10, bullet=True),
-            P("Typical contest sizes (≤ 10⁶ states) still finish well under a second", 16, INK, space=10, bullet=True),
-            P("A table is always faster: dp fn buys brevity and safety", 16, INK, space=10, bullet=True)]),
-    ], "This is the honest weak spot. A memoised recursion can't beat a table, but the memo table "
-       "itself should reach parity with C++ unordered_map; the fixes are inside the runtime.", "Results"))
+    S.append(slide("Memoization and dense tables", [
+        TABLE(0.4, 1.65, 8.3, [
+            ["Implementation", "Time (s)", "Peak memory (MiB)"],
+            ["Vulp dp fn", f"{lcs_dp['time_s']:.3f}", f"{lcs_dp['rss_mib']:.1f}"],
+            ["Vulp i32 table", f"{lcs_i32['time_s']:.3f}", f"{lcs_i32['rss_mib']:.1f}"],
+            ["C++ bottom-up table", f"{lcs_cpp['time_s']:.3f}", f"{lcs_cpp['rss_mib']:.1f}"],
+            ["C++ recursion with unordered_map", f"{lcs_memo['time_s']:.3f}", f"{lcs_memo['rss_mib']:.1f}"]],
+            [4.2, 1.5, 2.6], 14, 0.62, align=["l", "r", "r"]),
+        T(8.9, 1.65, 3.8, 5.1, [
+            P("LCS fills a dense 3000 by 3000 table", 16, INK, space=10, bullet=True),
+            P(f"Vulp dp fn takes {lcs_dp['time_s']:.3f} s and uses {lcs_dp['rss_mib']:.1f} MiB", 16, INK, space=10, bullet=True),
+            P(f"The Vulp i32 table is {lcs_dp['time_s'] / lcs_i32['time_s']:.0f}x faster and uses {lcs_dp['rss_mib'] / lcs_i32['rss_mib']:.0f}x less memory", 16, INK, space=10, bullet=True),
+            P("dp fn is useful when recursion revisits states; a dense table suits this workload", 16, INK, space=10, bullet=True)]),
+    ], "On this dense problem, a table avoids hash lookups and stores each value in a compact array. "
+       "The Fibonacci comparison shows the benefit of caching when plain recursion repeats work.", "Results"))
 
     # 14. ablations
     rows = [["Program", "Checks", "--no-checks", "Cost"]]
@@ -420,10 +428,9 @@ def build_slides(fig):
         T(7.6, 1.4, 5.2, 0.5, [P("int vs i32 elements (LCS table)", 16, INK, bold=True, space=0)]),
         TABLE(7.6, 1.9, 5.15, wrows, [2.75, 1.2, 1.2], 13, 0.4, align=["l", "r", "r"]),
         T(7.6, 4.2, 5.15, 2.4, [
-            P("Checks cost ≤ 10%, only in the innermost loop of a dense DP", 16, INK, space=10, bullet=True),
-            P("One word, int → i32, halves memory and gives 1.4×", 16, INK, space=10, bullet=True)]),
-    ], "Bounds checks stay on by default because they are nearly free. Picking the element width "
-       "is the bigger lever, and Vulp makes it a one-word change.", "Results"))
+            P("Checks cost 11% on dense LCS and 0-2% elsewhere", 16, INK, space=10, bullet=True),
+            P("In the width experiment, i32 uses about half the memory and is 1.5x faster than int", 16, INK, space=10, bullet=True)]),
+    ], "The measured i32 table uses 38.1 MiB and takes 0.033 s; the 64-bit table uses 72.6 MiB and takes 0.048 s.", "Results"))
 
     # 15. quality
     S.append(slide("Tested at every step, reviewed until satisfied", [
@@ -453,9 +460,9 @@ def build_slides(fig):
         T(6.9, 1.45, 5.9, 0.55, [P("Next, guided by the measurements", 18, INK, bold=True, space=0)]),
         T(6.9, 2.0, 5.9, 4.6, [P(t, 16, INK, space=9, bullet=True) for t in (
             "pq<T> and set<T>: removes Dijkstra's hand-written heap",
-            "Memo table specialised by key size, one probe per miss: target parity with C++ (now 2.8×)",
-            "Map values stored inline, for k, v in m: close the 1.46× gap",
-            "Suggest i32 when DP values provably fit (1.4×)")]),
+            "Memo table specialised by key size, one probe per miss: target parity with C++ (2.7x slower on LCS)",
+            "Map values stored inline, for k, v in m: reduce the 1.42x gap",
+            "Suggest i32 when DP values provably fit (about half the memory in LCS)")]),
     ], "Each next step is tied to a number measured in this report.", "Wrap-up"))
 
     # 17. try it

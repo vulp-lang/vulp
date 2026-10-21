@@ -57,6 +57,9 @@ cmake --build build
 - [docs/error_codes.md](docs/error_codes.md) — exit codes
 - [docs/PLAN.md](docs/PLAN.md) — the step-by-step implementation plan and its status
 - [docs/report/REPORT.md](docs/report/REPORT.md) — project report: examples and benchmarks against C++ and Python
+- [docs/report/phase1_review2/report.pdf](docs/report/phase1_review2/report.pdf) — Phase 1 Review 2 report (PDF)
+- [benchmark_summary.md](benchmark_summary.md) — concise benchmark results for sharing
+- [PROGRESS_CHECKLIST.md](PROGRESS_CHECKLIST.md) — project milestones against the initial proposal
 - [docs/presentation/vulp_v1.pptx](docs/presentation/vulp_v1.pptx) — slide deck (rebuilt by `docs/presentation/build_deck.py`)
 - [examples/](examples) — runnable programs with sample input and output
 
