@@ -72,7 +72,7 @@ def by_label(prob, label):
 def main_impls(name, prob):
     """The three headline implementations of a problem (for LCS: the table versions)."""
     if name == "lcs":
-        return [by_label(prob, "Vulp (table)"), by_label(prob, "C++ (table)"), by_label(prob, "Python")]
+        return [by_label(prob, "Vulp (i32 table)"), by_label(prob, "C++ (table)"), by_label(prob, "Python")]
     return [next(i for i in prob["impls"] if i["lang"] == lang) for lang in ("vulp", "cpp", "py")]
 
 
@@ -107,7 +107,7 @@ def fig_runtime(res):
             body.append(bar_between(x1, x2, by, 14, COLOR[impl["lang"]], ratio >= 1))
             label_x, anchor = (x2 + 6, "start") if ratio >= 1 else (x1 - 6, "end")
             body.append(text(label_x, by + 11, f"{ratio:.2f}×", 11, INK, anchor))
-    body.append(text(left, height - 10, "LCS uses the bottom-up table versions; Vulp's dp fn variant is in the LCS figure.", 11))
+    body.append(text(left, height - 10, "The runtime comparison uses bottom-up LCS tables; memoized variants are compared in section 4.5.", 11))
     return svg(width, height, body, "Runtime relative to C++",
                "Horizontal bars per problem for Vulp and Python, relative to C++ on a log scale.")
 
@@ -140,7 +140,7 @@ def fig_lcs(res, abl):
     prob = res["problems"]["lcs"]
     rows = [(i["label"], i["lang"], i["time_s"], i["rss_mib"]) for i in prob["impls"]]
     for w in abl["widths"]:
-        if w["variant"] in ("i32 table", "i32 table + --no-checks"):
+        if w["variant"] == "i32 table + --no-checks":
             rows.append(("Vulp (" + w["variant"] + ")", "vulp", w["time_s"], w["rss_mib"]))
     rows.sort(key=lambda r: r[2])
     left, right, top, row = 230, 150, 66, 30
@@ -203,7 +203,7 @@ def tables(res, abl):
                        + (f"{i['jit_total_s']:.3f}" if "jit_total_s" in i else "–") + " |")
     out += ["", "| Program | With checks (s) | `--no-checks` (s) | Check overhead |", "|---|---:|---:|---:|"]
     for r in abl["checks"]:
-        out.append(f"| {PRETTY[r['problem']]} — {r['label']} | {r['checks_s']:.3f} | {r['no_checks_s']:.3f} | "
+        out.append(f"| {PRETTY[r['problem']]}: {r['label']} | {r['checks_s']:.3f} | {r['no_checks_s']:.3f} | "
                    f"{(r['checks_s'] / r['no_checks_s'] - 1) * 100:+.0f}% |")
     out += ["", "| LCS table variant | Time (s) | Peak RSS (MiB) |", "|---|---:|---:|"]
     for w in abl["widths"]:
