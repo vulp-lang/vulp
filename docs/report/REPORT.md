@@ -2,11 +2,14 @@
 
 **Project report** · Vibhaas · October 2026 · [github.com/vulp-lang/vulp](https://github.com/vulp-lang/vulp)
 
+The formal Phase 1 Review 2 report is available as a [PDF](phase1_review2/report.pdf),
+with its [LaTeX source and figures](phase1_review2/).
+
 ## Summary
 
 Vulp is a small, statically typed language built for competitive programming (CP), with an
-LLVM-based compiler, `vulpc`. It keeps the speed of C++ and drops the boilerplate. The
-things contest problems need all the time are built in:
+LLVM-based compiler, `vulpc`. It provides syntax for several recurring parts of contest
+programs:
 
 - testcase loops (`TC:`);
 - fast token-based input (`read int[n] a;`);
@@ -22,16 +25,16 @@ runs:
 
 | Result | Number |
 |---|---|
-| **Runtime**: 4 of 6 problems | 0.90×–1.09× of C++ |
-| **Runtime**: map-heavy problem | 1.46× of C++ |
-| **Runtime**: DP-table problem | 1.88× of C++ with `int`; **1.13×** with `i32` elements and `--no-checks` |
-| **Speed vs Python** | **4.5×–13.9× faster** on 5 of 6 problems; Python's `dict` wins the map problem (0.86×) |
+| **Runtime**: 4 of 6 problems | 0.90x-1.17x of C++ on the reference laptop |
+| **Runtime**: map-heavy problem | 1.42x of C++ |
+| **Runtime**: DP-table problem | 1.37x of C++ with 32-bit table elements in both languages and Vulp checks enabled |
+| **Speed vs Python** | 4.6x-19.5x faster on 5 of 6 problems; nearly equal on map counting |
 | **Source size vs C++** | **30–81% fewer tokens** on 5 of 6 problems; Dijkstra is 51% longer because V1 has no priority queue |
-| **Build time** | **0.09–0.13 s** with `vulpc` vs 1.38–1.49 s with `g++`: about **14× faster** |
-| **JIT run** | compile-in-memory-and-run adds only **≈ 20–45 ms** over running a prebuilt binary |
-| **`dp fn`** | the keyword alone turns naive `fib(42)` from **0.92 s into < 0.01 s** |
-| **`dp fn` cost** | 34× slower than a hand-written table on a 9-million-state DP, and 2.8× slower than hand-memoised C++ |
-| **Runtime checks** | bounds and division checks cost **≤ 10%**, and are within ±3% (noise) on 6 of 7 programs |
+| **Build time** | 0.05-0.06 s with `vulpc` vs 0.96-1.05 s with `g++` on these sources |
+| **JIT run** | compile-in-memory-and-run adds roughly 16-35 ms over running a prebuilt binary |
+| **`dp fn`** | on `fib(40)`, 0.00157 s versus 0.198 s for plain Vulp recursion, 0.107 s for plain C++, and 8.26 s for plain Python recursion |
+| **`dp fn` tradeoff** | automatic caching removes repeated recursion, but a hand-written table is still much faster on a dense 9-million-state LCS problem |
+| **Runtime checks** | about 11% on the dense LCS table and 0-2% on the other measured programs |
 | **Quality** | 142 unit tests, 34 end-to-end programs run 3 ways, 20 compile-error tests, 10 examples, 88 AddressSanitizer runs with 0 reports |
 | **Independent review** | 7 rounds; 24 findings fixed before the reviewer was satisfied |
 
@@ -57,7 +60,8 @@ Competitive programmers mostly pick between two languages:
 - **C++**: fast, but every solution starts with the same fast-I/O incantations, a testcase
   loop, and hand-written memo tables. Mistakes such as out-of-bounds indexes or uninitialised
   variables fail silently.
-- **Python**: short to write, but often 5–25× too slow for the time limit (see
+- **Python**: concise, though its runtime varies by task. In this six-task comparison,
+  Vulp is 4.6x-19.5x faster on five tasks and nearly equal on map counting (see
   [§4.2](#42-runtime)).
 
 Vulp takes the constructs CP code is made of and makes them part of the language, then
@@ -153,7 +157,7 @@ int main() {
 
 </td></tr></table>
 
-The Vulp version runs 200,000 testcases in **0.071 s**, against **0.073 s** for the C++
+The Vulp version runs 200,000 testcases in **0.055 s**, against **0.055 s** for the C++
 ([§4.2](#42-runtime)). `read` uses a buffered reader, so it needs no `sync_with_stdio` tricks.
 Output is flushed automatically before the program waits for more input, so interactive
 problems work too.
@@ -167,13 +171,27 @@ dp fn fib(int n) -> int {
     if n <= 1: return n;
     return fib(n - 1) + fib(n - 2);
 }
-println(fib(42));
+read int n;
+println(fib(n));
 ```
 
-| Version | `fib(42)` |
-|---|---|
-| `fn fib` (naive recursion, 867 million calls) | 0.92 s |
-| `dp fn fib` (43 distinct states) | **< 0.01 s** |
+| Version | `fib(40)`, median elapsed time |
+|---|---:|
+| Vulp `dp fn` (41 distinct states) | **0.00157 s** |
+| Vulp plain recursion | 0.198 s |
+| C++ plain recursion | 0.107 s |
+| Python plain recursion | 8.26 s |
+
+These four programs read the same input, use the same recurrence, and print the same result. The three plain
+versions do not cache answers; `dp fn` adds that behavior with one keyword. The fresh-process
+timings include startup and are close to the startup floor for the `dp fn` case. Three
+interleaved runs at each of `n = 34, 37, 40` are recorded in
+[`bench/dp_fib/results_cross_language.json`](bench/dp_fib/results_cross_language.json),
+with the runnable harness in [`bench/dp_fib/benchmark.py`](bench/dp_fib/benchmark.py).
+
+![Fibonacci runtime across input sizes](bench/dp_fib/figures/fib_runtime.png)
+
+![Plain recursion relative to Vulp dp fn](bench/dp_fib/figures/fib_speedup.png)
 
 The compiler checks that a `dp fn` is safe to cache:
 
@@ -234,9 +252,8 @@ println(x * y);
 ```
 
 Widths are **storage** widths. Arithmetic on narrower types is done in 64 bits, so
-`int<0..100000> x; x * x` cannot overflow. Choosing a narrow element type is a real
-optimisation: an `i32` DP table halves memory and runs 1.4× faster than an `int` table
-([§4.6](#46-ablations-runtime-checks-and-integer-widths)).
+`int<0..100000> x; x * x` cannot overflow. Choosing an element type that fits the
+problem's value range keeps dense tables compact.
 
 ### 2.5 Containers, maps and structs
 
@@ -302,8 +319,9 @@ vulp runtime error (line 3): index 3 out of bounds for length 3
 ```
 
 Runtime checks cover indexes, division by zero, `pop()` on an empty container, reading past
-the end of input, and input integers too large for their type. They cost at most 10%
-([§4.6](#46-ablations-runtime-checks-and-integer-widths)), and `--no-checks` removes them.
+the end of input, and input integers too large for their type. In the LCS `i32` table
+ablation they cost about 11%; other measured programs show 0-2%
+([§4.6](#46-runtime-checks)), and `--no-checks` removes them.
 
 ---
 
@@ -349,161 +367,106 @@ Details are in [docs/architecture.md](../architecture.md).
 
 ### 4.1 Method
 
-| | |
-|---|---|
-| Machine | AMD EPYC 9654P (96 cores), Linux 6.17, shared machine |
-| Vulp | `vulpc -O2 prog.vp -o prog` (LLVM 18.1.3) |
-| C++ | `g++ -O2 -std=c++20` (GCC 13.3), idiomatic CP style: `<bits/stdc++.h>`, untied `cin`/`cout` |
-| Python | CPython 3.12.3, idiomatic: `sys.stdin.buffer.read().split()`, built-ins |
-| Runs | 7 timing rounds, each implementation run once per round (interleaved), all pinned to one CPU; median reported, min–max in the appendix |
-| Correctness | the SHA-256 of every implementation's output must be identical, or the harness aborts |
-| Memory | peak resident set (max RSS) from `/usr/bin/time` |
-| Code size | non-blank, non-comment lines, and tokens (identifiers, numbers, strings and operators) |
-| Inputs | generated with fixed seeds by [`bench/gen_inputs.py`](bench/gen_inputs.py) (up to 19 MB) |
+All results in this section were measured on the reference laptop with an AMD Ryzen 9
+8940HX, Linux, LLVM 18.1.3, GCC 13.3, and CPython 3.12.3. Vulp and C++ programs were
+built with `-O2`. Each task uses a fixed input generated by
+[`bench/gen_inputs.py`](bench/gen_inputs.py). The harness verifies byte-identical output
+across languages before accepting a timing. It runs seven interleaved rounds pinned to
+one CPU and reports the median. Peak memory is resident set size from `/usr/bin/time`.
+Build time is the median of three builds. Raw timings, input sizes, and output hashes
+are in [`bench/results.json`](bench/results.json).
 
-The machine is shared with other users, so the interleaving matters: an early
-non-interleaved run measured one program 60% slower purely because of a busy neighbour.
-With interleaving, the fastest and slowest of the 7 runs are within 5% of each other for 13
-of the 20 configurations. The largest spread, 20%, is on the 50 ms sieve runs, where a few
-milliseconds of noise is a large fraction. The appendix lists every min–max range.
-
-| Problem | Input | What it stresses |
+| Task | Input | Main workload |
 |---|---|---|
-| Sieve | count primes ≤ 2·10⁷ | tight loops over a `bool` array |
-| Sort + I/O | read, sort and print 10⁶ integers | input parsing, sorting, output formatting |
-| LCS | two random 3000-character DNA strings | 2-D dynamic programming, 9·10⁶ states |
-| Dijkstra | 10⁵ vertices, 5·10⁵ weighted edges | adjacency lists of structs, heap, references |
-| Testcases | 2·10⁵ testcases of 1–9 numbers (max subarray sum) | `TC:` overhead, many small reads and writes |
-| Map count | 10⁶ insertions of 64-bit keys, 2·10⁵ distinct | ordered map |
+| Sieve | primes through 20 million | tight array loop |
+| Sort and I/O | one million integers | parsing, sorting, printing |
+| LCS | two 3000-character strings | dense dynamic programming |
+| Dijkstra | 100,000 vertices, 500,000 edges | adjacency lists and heap |
+| Testcases | 200,000 small arrays | `TC:` and buffered input |
+| Map count | one million operations | ordered-map updates |
 
 ### 4.2 Runtime
 
 ![Runtime relative to C++](figures/runtime_vs_cpp.svg)
 
-| Problem | Vulp (s) | C++ (s) | Python (s) | Vulp vs C++ | Vulp vs Python |
-|---|---:|---:|---:|---:|---:|
-| Sieve | 0.056 | 0.051 | 0.645 | 1.09× | 11.5× faster |
-| Sort + I/O | 0.134 | 0.148 | 0.608 | **0.90×** | 4.5× faster |
-| LCS (table) | 0.060 | 0.032 | 0.833 | 1.88× | 13.9× faster |
-| Dijkstra | 0.121 | 0.122 | 0.814 | **0.99×** | 6.7× faster |
-| Testcases | 0.071 | 0.073 | 0.383 | **0.98×** | 5.4× faster |
-| Map count | 0.433 | 0.295 | 0.373 | 1.46× | 0.86× (slower) |
+| Problem | Vulp (s) | C++ (s) | Python (s) | Vulp/C++ |
+|---|---:|---:|---:|---:|
+| Sieve | 0.041 | 0.035 | 0.532 | 1.17x |
+| Sort and I/O | 0.100 | 0.111 | 0.456 | 0.90x |
+| LCS (i32 table) | 0.033 | 0.024 | 0.645 | 1.37x |
+| Dijkstra | 0.083 | 0.086 | 0.628 | 0.96x |
+| Testcases | 0.055 | 0.055 | 0.305 | 0.99x |
+| Map count | 0.275 | 0.194 | 0.275 | 1.42x |
 
-- **Equal to C++** on sieve, Dijkstra and the testcase loop; **10% faster** on sort + I/O,
-  because Vulp's buffered reader and integer printer beat even untied `iostream`s.
-- **The LCS table** gap is mostly the element type: the Vulp program uses 64-bit `int`
-  where the C++ uses 32-bit `int`. With `i32` elements Vulp needs the same memory as C++
-  (37.6 MiB) and runs in 0.043 s, or 0.036 s with `--no-checks` (1.13× of C++)
-  ([§4.6](#46-ablations-runtime-checks-and-integer-widths)).
-- **The map** is 1.46× slower than `std::map`. Every operation is a call into the runtime,
-  and each entry's value lives in a separate allocation (two allocations per insert instead
-  of one). The final loop also looks each key up again (`cnt[k]`), because V1's map
-  iteration yields keys only. Python's hash `dict` beats both here, since nothing needs
-  ordering until the end.
+Four tasks run within 17% of C++ time. The map is slower because values have separate
+allocations and key iteration needs another lookup. The LCS comparison uses 32-bit
+table elements in both compiled languages. The checked Vulp run takes 0.033 s and
+38.1 MiB, compared with 0.024 s and 37.5 MiB for C++.
 
 ### 4.3 Source size
 
 ![Source size in tokens](figures/code_size.svg)
 
-| Problem | Vulp | C++ | Python | Vulp vs C++ |
+| Problem | Vulp tokens | C++ tokens | Python tokens | Vulp versus C++ |
 |---|---:|---:|---:|---:|
-| Sieve | 83 | 143 | 105 | −42% |
-| Sort + I/O | **22** | 118 | 72 | −81% |
-| LCS (`dp fn`) / (table) | 108 / 138 | 196 | 158 | −45% / −30% |
-| Dijkstra | 518 | 344 | 266 | +51% |
-| Testcases | 59 | 134 | 150 | −56% |
-| Map count | 86 | 146 | 113 | −41% |
+| Sieve | 83 | 143 | 105 | 42% fewer |
+| Sort and I/O | 22 | 118 | 72 | 81% fewer |
+| LCS (i32 table) | 138 | 196 | 158 | 30% fewer |
+| Dijkstra | 518 | 344 | 266 | 51% more |
+| Testcases | 59 | 134 | 150 | 56% fewer |
+| Map count | 86 | 146 | 113 | 41% fewer |
 
-Vulp is the shortest of the three languages on five of the six problems, and shorter than
-Python as well as C++. Sort + I/O is the whole program:
-
-```text
-read int n;
-read int[n] a;
-a.sort();
-println(a);
-```
-
-Dijkstra is the exception, because V1 has no priority queue and the program carries a
-30-line binary heap. That is the most valuable library addition for V2
-([§6](#6-limitations-and-future-work)).
+Vulp is shorter than C++ on five tasks. Dijkstra is longer because V1 has no priority
+queue and its solution includes a handwritten binary heap. Token count does not measure
+the time needed to learn a language or write a correct solution.
 
 ### 4.4 Build time and JIT
 
 ![Build time](figures/build_time.svg)
 
-`vulpc` builds a native executable in **0.09–0.13 s**; `g++` takes **1.38–1.49 s**, mostly
-spent parsing `<bits/stdc++.h>`. A precompiled header would narrow that gap; most
-contestants don't use one. In JIT mode, compiling in memory and running costs only
-20–45 ms more than running a prebuilt binary (for example sieve: 0.081 s JIT vs 0.056 s
-binary), so "edit, run, check" never waits on a compiler.
+The six Vulp executables build in 0.05-0.06 s; the C++ builds take 0.96-1.05 s with
+`<bits/stdc++.h>`. A different header strategy or a precompiled header would affect
+this comparison. The JIT also runs each program without first saving an executable;
+its compile-and-run time is included in the full results table below.
 
-### 4.5 The price of `dp fn`
+### 4.5 Memoization and dense tables
 
-![LCS variants](figures/lcs_variants.svg)
+The Fibonacci experiment above shows the intended benefit of `dp fn`: caching removes
+repeated recursive calls without a manually written table. Dense LCS has a different
+access pattern and favors an array. On this laptop:
 
-`dp fn` buys brevity and safety, not speed. On LCS with 9 million states:
-
-| Implementation | Time | Memory | vs C++ table |
-|---|---:|---:|---:|
-| C++ bottom-up table | 0.032 s | 38 MiB | 1× |
-| Vulp `i32` table + `--no-checks` | 0.036 s | 38 MiB | 1.13× |
-| Vulp `int` table | 0.060 s | 72 MiB | 1.88× |
-| C++ recursion memoised in `unordered_map` | 0.725 s | 323 MiB | 23× |
-| Python bottom-up table | 0.833 s | 9 MiB | 26× |
-| Vulp `dp fn` | 2.065 s | 675 MiB | 64× |
-
-A memoised recursion is inherently slower than a table: each state costs a hash lookup and
-a function call, in random memory order. The fair comparison is therefore hand-memoised C++,
-and the Vulp memo table is **2.8× slower and 2.1× larger** than that. The causes are known
-and fixable inside the runtime:
-
-- keys are hashed byte by byte through a generic, non-inlined call;
-- a cache miss probes the table twice (`get`, then `put`);
-- 28-byte entries straddle cache lines;
-- the table is at most half full, and every doubling rehashes every entry.
-
-Specialising the table for the key size the compiler already knows, and returning the slot
-from `get` to reuse in `put`, are the first steps ([§6](#6-limitations-and-future-work)).
-For the usual CP sizes (up to about 10⁶ states) a `dp fn` finishes in well under a second.
-
-### 4.6 Ablations: runtime checks and integer widths
-
-| Program | Checks on | `--no-checks` | Overhead |
-|---|---:|---:|---:|
-| Sieve | 0.057 s | 0.059 s | −3% (noise) |
-| Sort + I/O | 0.138 s | 0.138 s | +1% |
-| LCS (`dp fn`) | 2.071 s | 2.062 s | +0% |
-| LCS (`int` table) | 0.060 s | 0.054 s | **+10%** |
-| Dijkstra | 0.124 s | 0.122 s | +2% |
-| Testcases | 0.072 s | 0.071 s | +1% |
-| Map count | 0.537 s | 0.552 s | −3% (noise) |
-
-| LCS table element type | Time | Peak memory |
+| LCS implementation | Time (s) | Peak memory (MiB) |
 |---|---:|---:|
-| `int` (64-bit) | 0.061 s | 72.0 MiB |
-| `int` + `--no-checks` | 0.055 s | 72.1 MiB |
-| `i32` | 0.043 s | 37.6 MiB |
-| `i32` + `--no-checks` | 0.036 s | 37.5 MiB |
+| C++ bottom-up table | 0.024 | 37.5 |
+| Vulp `i32` table, checks on | 0.033 | 38.1 |
+| C++ recursion with `unordered_map` | 0.579 | 323.4 |
+| Python bottom-up table | 0.645 | 10.1 |
+| Vulp `dp fn` | 1.581 | 675.7 |
 
-Bounds checks are nearly free except in the innermost loop of a dense DP, where they cost
-10%. Choosing the element width matters more (1.4×), and it is a one-word change
-(`int[n + 1][m + 1] dp;` → `i32[n + 1][m + 1] dp;`).
+The Vulp memo table takes about 2.7 times the hand-memoized C++ time on this large
+state space. Generic hashing, repeated table probes, and entry layout are targets for
+improvement. The result does not change the usefulness of `dp fn` when the alternative
+is an uncached recurrence or when state sparsity makes a dense table wasteful.
+
+### 4.6 Runtime checks
+
+The full ablation results are in [`bench/ablation.json`](bench/ablation.json). On the
+`i32` LCS table, disabling checks changes the median from 0.032 s to 0.027 s in a
+separate experiment. Other programs show about 0-2% differences in that run.
 
 ### 4.7 Memory
 
-| Problem | Vulp | C++ | Python |
+| Problem | Vulp (MiB) | C++ (MiB) | Python (MiB) |
 |---|---:|---:|---:|
-| Sieve | 21.1 MiB | 21.1 MiB | 46.6 MiB |
-| Sort + I/O | 10.5 MiB | 10.6 MiB | 185.7 MiB |
-| Dijkstra | 19.6 MiB | 21.1 MiB | 171.8 MiB |
-| Testcases | 3.1 MiB | 3.1 MiB | 86.8 MiB |
-| Map count | 22.5 MiB | 15.1 MiB | 110.4 MiB |
+| Sieve | 22.9 | 22.3 | 48.1 |
+| Sort and I/O | 11.4 | 10.8 | 188.1 |
+| Dijkstra | 21.4 | 21.0 | 173.7 |
+| Testcases | 3.9 | 3.3 | 89.2 |
+| Map count | 22.8 | 15.5 | 112.4 |
 
-Apart from the map's extra value blocks and the `dp fn` table discussed above, Vulp uses
-the same memory as C++, and 2–28× less than Python. Deterministic frees keep loops that
-copy containers in constant memory: one reviewer test went from 1 GB to 3 MB once frees
-were implemented.
+The map's extra allocations increase Vulp's memory use. For the other listed tasks,
+Vulp's peak memory is close to C++ and below Python. Container values are freed when
+they leave scope or are overwritten.
 
 ---
 
@@ -557,11 +520,11 @@ From the measurements, the most valuable next steps are:
    hand-written heap that makes Dijkstra Vulp's only longer-than-C++ program.
 2. **A faster memo table**: specialise it by key size, do one probe per miss, use a compact
    entry layout, and allow preallocation. Target: at least parity with C++ `unordered_map`
-   memoisation (currently 2.8× behind).
+   memoisation (currently about 2.7 times slower on LCS).
 3. **A faster map**: store values inline in the tree node, and iterate over key–value pairs
-   (`for k, v in m`) so the extra lookups go away (currently 1.46× behind `std::map`).
-4. **Width inference for DP tables**: suggest `i32` when the values provably fit, since that
-   is worth 1.4× on dense DPs.
+   (`for k, v in m`) so the extra lookups go away (currently 1.42 times slower than `std::map`).
+4. **Width inference for DP tables**: suggest `i32` when the values provably fit, reducing
+   storage for large dense tables.
 
 ---
 
@@ -573,7 +536,7 @@ cmake -S . -B build -G Ninja && cmake --build build      # LLVM 18, CMake, a C++
 python3 docs/report/bench/run_bench.py                   # generates inputs, builds, runs, verifies -> results.json
 python3 docs/report/bench/ablation.py                    # checks / widths ablations -> ablation.json
 python3 docs/report/bench/make_figures.py                # figures/*.svg and bench/results_tables.md
-docs/report/bench/dp_fib/run.sh                          # fib(42) with and without dp
+python3 docs/report/bench/dp_fib/benchmark.py            # fib(34), fib(37), fib(40), four variants
 python3 docs/presentation/build_deck.py                  # the slide deck, from the same results
 ```
 
@@ -583,32 +546,7 @@ Absolute times depend on the machine. The ratios are what to compare.
 
 ## Appendix: full results
 
-The tables below are generated by `make_figures.py`
-([bench/results_tables.md](bench/results_tables.md)); the raw data is in
-[bench/results.json](bench/results.json) and [bench/ablation.json](bench/ablation.json).
-
-| Problem | Implementation | Time (s) | Min–max (s) | vs C++ | Peak RSS (MiB) | Lines | Tokens | Build (s) | JIT run (s) |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Sieve (n = 2·10⁷) | Vulp | 0.056 | 0.055–0.066 | 1.09× | 21.1 | 10 | 83 | 0.10 | 0.081 |
-| Sieve (n = 2·10⁷) | C++ | 0.051 | 0.050–0.060 | 1.00× | 21.1 | 17 | 143 | 1.39 | – |
-| Sieve (n = 2·10⁷) | Python | 0.645 | 0.628–0.707 | 12.53× | 46.6 | 14 | 105 | – | – |
-| Sort + I/O (10⁶ ints) | Vulp | 0.134 | 0.133–0.134 | 0.90× | 10.5 | 4 | 22 | 0.09 | 0.157 |
-| Sort + I/O (10⁶ ints) | C++ | 0.148 | 0.146–0.152 | 1.00× | 10.6 | 12 | 118 | 1.42 | – |
-| Sort + I/O (10⁶ ints) | Python | 0.608 | 0.604–0.612 | 4.12× | 185.7 | 7 | 72 | – | – |
-| LCS (3000 × 3000) | Vulp (dp fn) | 2.065 | 2.055–2.075 | 64.13× | 674.7 | 8 | 108 | 0.10 | 2.099 |
-| LCS (3000 × 3000) | Vulp (table) | 0.060 | 0.060–0.062 | 1.88× | 72.1 | 12 | 138 | 0.09 | 0.092 |
-| LCS (3000 × 3000) | C++ (table) | 0.032 | 0.031–0.034 | 1.00× | 37.6 | 14 | 196 | 1.42 | – |
-| LCS (3000 × 3000) | C++ (memo) | 0.725 | 0.723–0.746 | 22.52× | 323.0 | 19 | 212 | 1.46 | – |
-| LCS (3000 × 3000) | Python | 0.833 | 0.828–0.839 | 25.88× | 9.1 | 16 | 158 | – | – |
-| Dijkstra (10⁵ V, 5·10⁵ E) | Vulp | 0.121 | 0.119–0.123 | 0.99× | 19.6 | 56 | 518 | 0.13 | 0.165 |
-| Dijkstra (10⁵ V, 5·10⁵ E) | C++ | 0.122 | 0.120–0.124 | 1.00× | 21.1 | 35 | 344 | 1.49 | – |
-| Dijkstra (10⁵ V, 5·10⁵ E) | Python | 0.814 | 0.807–0.823 | 6.69× | 171.8 | 26 | 266 | – | – |
-| 2·10⁵ testcases | Vulp | 0.071 | 0.071–0.072 | 0.98× | 3.1 | 10 | 59 | 0.11 | 0.099 |
-| 2·10⁵ testcases | C++ | 0.073 | 0.072–0.074 | 1.00× | 3.1 | 20 | 134 | 1.38 | – |
-| 2·10⁵ testcases | Python | 0.383 | 0.382–0.386 | 5.24× | 86.8 | 18 | 150 | – | – |
-| Map count (10⁶ ops) | Vulp | 0.433 | 0.408–0.470 | 1.46× | 22.5 | 9 | 86 | 0.10 | 0.451 |
-| Map count (10⁶ ops) | C++ | 0.295 | 0.291–0.314 | 1.00× | 15.1 | 18 | 146 | 1.42 | – |
-| Map count (10⁶ ops) | Python | 0.373 | 0.369–0.390 | 1.26× | 110.4 | 14 | 113 | – | – |
-
-Benchmark sources: [`bench/`](bench) — one folder per problem with the `.vp`, `.cpp` and `.py`
-versions.
+The complete generated tables are in [`bench/results_tables.md`](bench/results_tables.md).
+The raw laptop measurements are in [`bench/results.json`](bench/results.json) and
+[`bench/ablation.json`](bench/ablation.json). The Fibonacci runs are in
+[`bench/dp_fib/results_cross_language.json`](bench/dp_fib/results_cross_language.json).
