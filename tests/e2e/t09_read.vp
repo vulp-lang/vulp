@@ -1,0 +1,31 @@
+# 5.9: standard competitive-programming input: read(...) and `read T x;` declarations
+read int n;
+read int[n] a;                   # declares a with n elements and reads them
+int sum = 0;
+for x in a: sum += x;
+println("n=", n, " sum=", sum);
+read string word;                # whitespace-separated token
+read char c1, c2;                # next non-blank characters
+read float f;
+println(word, " ", c1, c2, " ", f * 2);
+int p, q;
+read(p, q);                      # read into existing variables
+println(p * q);
+read i128 big;
+println(big + 1);
+read u64 u;
+println(u);
+read int[2][3] grid;             # 2 rows x 3 columns
+println(grid);
+struct P { int x; string name; }
+read P pt;                       # structs are read field by field
+println(pt.name, ":", pt.x);
+read int m;
+read P[m] pts;
+for item in pts: print(item.name, "=", item.x, " ");
+println();
+vec<int> v = [0, 0, 0];          # read fills the existing elements of a vec
+read(v);
+println(v);
+read(a[0]);                      # any element / field can be a target
+println(a);

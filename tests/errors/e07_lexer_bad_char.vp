@@ -1,0 +1,4 @@
+# EXPECT-ERROR: lexer error: unexpected character '@'
+# EXPECT-ERROR: unterminated string literal
+int x = 5 @ 3;
+println("oops);

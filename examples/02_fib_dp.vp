@@ -1,0 +1,15 @@
+# Memoised Fibonacci: `dp` in front of `fn` caches results by argument.
+dp fn fib(i32 n) -> i32 {
+    if n <= 1:
+        return n;
+    else: {
+        i32 a = fib(n - 1), b = fib(n - 2);
+        return a + b;
+    }
+}
+
+read int q;                 # number of queries
+for i in [1..q]: {
+    read i32 n;
+    println("fib(", n, ") = ", fib(n));
+}

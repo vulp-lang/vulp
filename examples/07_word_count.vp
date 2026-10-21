@@ -1,0 +1,9 @@
+# Count words with an ordered map; keys come out sorted.
+read int n;
+map<string, int> count;
+for i in [1..n]: {
+    read string w;
+    count[w] += 1;                 # missing keys start at 0
+}
+for w in count: println(w, " ", count[w]);
+println("distinct: ", count.len());

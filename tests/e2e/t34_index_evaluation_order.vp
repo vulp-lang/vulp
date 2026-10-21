@@ -1,0 +1,18 @@
+# Index expressions run before any address is taken, so an index that grows a container
+# cannot leave the element address dangling.
+vec<vec<int>> a = [[1, 2, 3]];
+fn grow() -> int { for i in [1..100]: a.push([i]); return 1; }
+println(a[0][grow()]);          # a[0] is located after grow() has reallocated a
+a[0][grow()] = 42;
+println(a[0], " ", a.len());
+map<string, vec<int>> m;
+m["k"] = [7, 8];
+fn addkeys() -> int { for i in [1..100]: m[string(i)] = [i]; return 0; }
+m["k"][addkeys()] += 1;
+println(m["k"]);
+struct T { vec<T> kids; vec<int> vals; }
+T t;
+t.kids = [T([], [1, 2])];
+fn deepen() -> int { t.kids.push(T([], [9])); t.kids.push(T([], [9])); return 1; }
+t.kids[0].vals[deepen()] = 5;
+println(t.kids[0].vals, " ", t.kids.len());

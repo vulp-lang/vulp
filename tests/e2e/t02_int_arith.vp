@@ -1,0 +1,17 @@
+# 5.2: integer arithmetic, comparisons, logic, bitwise operators, precedence
+int a = 17, b = 5;
+println(a + b, " ", a - b, " ", a * b, " ", a / b, " ", a % b);
+println(-a / b, " ", -a % b);                 # truncating division like C
+println(a == b, " ", a != b, " ", a < b, " ", a <= b, " ", a > b, " ", a >= b);
+println(true && false, " ", true || false, " ", !true);
+println(a & b, " ", a | b, " ", a ^ b, " ", ~a, " ", 1 << 40, " ", a >> 2, " ", -16 >> 2);
+println(1 + 2 * 3, " ", (1 + 2) * 3, " ", 2 * 3 % 4, " ", 10 - 4 - 3);
+println(a & 1 == 1, " ", a + 1 == 18);       # bitwise binds tighter than ==
+println(9223372036854775807 + 1 == -9223372036854775807 - 1); # wrapping 64-bit arithmetic
+
+# short-circuit evaluation
+int calls = 0;
+fn bump() -> bool { calls += 1; return true; }
+if false && bump(): println("unreachable");
+if true || bump(): println("short-circuit ok");
+println("calls = ", calls);

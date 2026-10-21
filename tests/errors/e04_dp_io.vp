@@ -1,0 +1,6 @@
+# EXPECT-ERROR: dp function 'g' must not perform input/output
+fn log(int n) { println("computing ", n); }
+dp fn g(int n) -> int {
+    log(n);
+    return n * 2;
+}

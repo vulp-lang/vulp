@@ -1,0 +1,47 @@
+# 5.10: arrays: T[n], T[n][m], array literals, range arrays ("rangearr"), for-in
+int n = 5;
+int[n] a;                          # n zero-initialised elements (size known at runtime)
+for i in [0..n-1]: a[i] = i * i;
+println(a, " | len=", a.len());
+int[] lit = [3, 1, 4, 1, 5];
+println(lit);
+int[] r = [1..10];                 # range array, inclusive
+println(r);
+vec<int> evens = [0..4];
+println(evens.len(), " ", evens.back());
+char[] letters = ['a'..'f'];
+println(letters);
+int[] down = [5..1];               # empty: ranges only count upwards
+println(down.len());
+i8[] small = [1, 2, 3];
+println(small[2] * 50);            # narrow integers compute in 64 bits
+bool[n + 1] seen;
+seen[2] = true;
+println(seen);
+int[3][4] grid;                    # 3 rows of 4
+for i in [0..2]: for j in [0..3]: grid[i][j] = i * 10 + j;
+println(grid);
+println(grid[2][3], " ", grid.len(), " ", grid[0].len());
+vec<int>[3] adj;                   # adjacency list: 3 empty vecs
+adj[0].push(1);
+adj[0].push(2);
+adj[2].push(0);
+for u in [0..2]: {
+    print(u, ":");
+    for v in adj[u]: print(" ", v);
+    println();
+}
+int total = 0;
+for x in lit: total += x;
+println("total ", total);
+int[] b = lit;                     # value semantics: b is a copy
+b[0] = 100;
+println(lit[0], " ", b[0]);
+string[] words = ["hi", "there"];
+println(words, " ", words[1][0]);
+int[][] jag = [[1], [2, 3], []];
+println(jag[1][1], " ", jag[2].len());
+float[] fs = [1, 2.5];
+println(fs);
+println([1, 2, 3].len(), " ", [10..20][3]);
+println(a[n - 1]);

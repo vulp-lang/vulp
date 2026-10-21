@@ -1,0 +1,15 @@
+# Classic multi-testcase input:
+#   t
+#   n            (for each testcase)
+#   a1 .. an
+# For every testcase print the sum and the maximum of the array.
+TC: {                              # reads t, then runs this block t times
+    read int n;
+    read int[n] a;                 # n integers
+    int sum = 0, best = a[0];
+    for x in a: {
+        sum += x;
+        best = max(best, x);
+    }
+    println(sum, " ", best);
+}

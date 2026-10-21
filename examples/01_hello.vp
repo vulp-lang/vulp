@@ -1,0 +1,2 @@
+# The smallest Vulp program. Run it with:   vulpc examples/01_hello.vp
+println("Hello from Vulp!");

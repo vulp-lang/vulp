@@ -1,0 +1,41 @@
+# Elements of temporaries (f()[i], mk().field) are copied out and the temporary is freed;
+# `&` arguments are located only after all argument values have been computed.
+struct S { int x; vec<int> v; string name; }
+fn mks(int i) -> S { return S(i, [i, i + 1], "s" + string(i)); }
+fn mk(int n) -> vec<int> { return [n, n + 1, n + 2]; }
+fn mkm(int n) -> map<int, vec<int>> { map<int, vec<int>> m; m[n] = [n]; return m; }
+int acc = 0;
+for (int i = 0; i < 1000; i++): {
+    acc += mk(i)[1] + mks(i).x + mks(i).v.len() + mks(i).v[1] + mkm(i)[i][0] + mkm(i)[i + 1].len();
+    if mk(1)[0] == mk(2)[0]: acc += 1000000;
+    string nm = mks(i).name;
+    vec<int> vv = mks(i).v;
+    acc += vv.back() + mk(i).back() + nm.len();
+    acc += mks(i).name.len() + mkm(i).len();
+}
+println(acc);
+vec<int> last = mks(5).v;
+println(last, " ", mks(7).name, " ", mk(3).back(), " ", [[1, 2], [3]][1][0], " ", "hello"[1]);
+vec<int> g = [1, 2, 3];
+fn setg() -> int { g = [10, 20, 30, 40]; return 5; }
+fn addto(int& x, int y) { x += y; }
+addto(g[1], setg());              # g[1] is located after setg() has replaced g
+println(g);
+fn swap_s(string& a, string& b) { string t = a; a = b; b = t; }
+vec<string> names = ["x", "yy", "zzz"];
+swap_s(names[0], names[2]);
+swap_s(names[1], names[1]);
+println(names);
+fn app(vec<int>& v, int x) { v.push(x); }
+map<string, vec<int>> mm;
+app(mm["a"], 1);
+app(mm["a"], 2);
+app(mm["b"], 3);
+for k in mm: println(k, ": ", mm[k]);
+struct Box { vec<vec<int>> rows; }
+fn fill(vec<int>& r, int n) { for i in [1..n]: r.push(i); }
+Box bx;
+bx.rows = [[], []];
+fill(bx.rows[1], 3);
+fill(bx.rows[0], 2);
+println(bx.rows);

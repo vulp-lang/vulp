@@ -1,0 +1,8 @@
+# EXPECT-ERROR: struct 'P' has no field 'z'
+# EXPECT-ERROR: struct 'P' has 2 field(s); construct it with no arguments or with all of them
+# EXPECT-ERROR: struct 'Loop' contains itself by value through field 'inner'
+struct P { int x, y; }
+struct Loop { int v; Loop inner; }
+P p = P(1, 2);
+p.z = 3;
+P q = P(1);

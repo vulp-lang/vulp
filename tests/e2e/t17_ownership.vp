@@ -1,0 +1,56 @@
+# Ownership & freeing: every heap buffer has one owner; overwritten values are freed.
+# (The test-suite also runs this with VULP_DEBUG_FREE=1, which poisons freed memory.)
+vec<int> v = [1, 2, 3];
+v = v;                                  # self-assignment copies before freeing
+println(v);
+vec<vec<int>> g = [[1], [2, 2], [3, 3, 3]];
+g[0] = g[2];                            # element from the same container
+g[2] = [9];
+println(g);
+println("--");
+vec<int> a, b, c;
+a = b = c = [5, 6];                     # chained assignment
+c.push(7);
+println(a, " | ", b, " | ", c);
+string s = "abc";
+s = s + s;
+s += s;
+println(s);
+fn grow(vec<int> x) -> vec<int> { x.push(x.len()); return x; }
+for i in [1..3]: v = grow(v);
+println(v);
+fn both(vec<int>& x, vec<int>& y) { x = y; x.push(0); }
+both(v, v);                             # aliasing references
+println(v);
+string t = "abc";
+fn change() -> string { t = "zzz"; return "abc"; }
+println(t == change(), " ", t);         # the left side was read before change() ran
+vec<int>[3] adj;
+adj[0] = [1, 2];
+adj[1] = [2];
+adj[2] = [0, 1];
+int u = 0;
+for x in adj[u]: { u = x; print(x, " "); }   # the list is chosen once
+println("| u=", u);
+for x in v: { v = [100]; print(x, " "); }     # loops over a variable see it change
+println("| ", v);
+vec<vec<int>> rows = [[1, 2, 3]];
+for x in rows[0]: { rows.push([x]); print(x, " "); }   # growing the outer vec mid-loop
+println("| ", rows.len());
+map<int, vec<int>> m;
+m[1] = [1, 2, 3];
+m[2] = [4];
+for x in m[1]: { m.erase(1); print(x, " "); }          # erasing the vec being walked
+println("| ", m.len(), " ", m.has(1));
+m[3].push(5);
+m.clear();
+println(m.len());
+vec<vec<int>> st = [[1], [2]];
+st.pop();                               # a discarded owning value is freed
+println(st);
+vec<int> prev = [0, 0, 0];
+for i in [1..1000]: {                   # rolling arrays
+    vec<int> cur = [prev[0] + 1, prev[1] + i, prev[2] + i * i];
+    prev = cur;
+}
+println(prev);

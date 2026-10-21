@@ -1,0 +1,7 @@
+# runtime error: index out of bounds (output printed so far is flushed first)
+# EXPECT-EXIT: 1
+# EXPECT-STDERR: vulp runtime error (line 6): index 5 out of bounds for length 5
+int[5] a;
+println("before");
+a[5] = 1;
+println("after");

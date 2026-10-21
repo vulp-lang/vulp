@@ -1,0 +1,17 @@
+# Temporaries are freed after use, so indexing function results in a hot loop stays in
+# constant memory.
+# MAX-RSS-MB: 32
+struct S { int x; vec<int> v; }
+fn mks(int i) -> S { return S(i, [i, i + 1, i + 2, i + 3]); }
+fn mk(int n) -> vec<int> {
+    vec<int> r;
+    for k in [1..100]: r.push(n + k);
+    return r;
+}
+int acc = 0;
+for (int i = 0; i < 400000; i++): {
+    acc += mk(i)[1] + mks(i).x + mks(i).v.len() + mks(i).v[3];
+    if mk(1)[0] == mk(2)[0]: acc += 1;
+    acc += mk(i).back() - mk(i).len();
+}
+println(acc);

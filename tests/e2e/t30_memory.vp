@@ -1,0 +1,21 @@
+# Overwritten and out-of-scope values are freed, so loops that copy containers run in
+# constant memory (without freeing, this program would need several gigabytes).
+# MAX-RSS-MB: 64
+# TIME-LIMIT: 10
+vec<int> base = [1..1000];
+for i in [1..200000]: { vec<int> cur = base; cur.push(i); }
+for i in [1..2000000]: { int[26] cnt; cnt[i % 26] = i; }
+fn helper(vec<int> x) -> int {
+    vec<int> tmp = x;
+    tmp.push(1);
+    return tmp.len();
+}
+int total = 0;
+for i in [1..100000]: total += helper(base);
+string s;
+for i in [1..200000]: { s = string(i) + "abc"; if s == "zzz": println("never"); }
+vec<vec<int>> rolling = [[0]];
+for i in [1..200000]: rolling = [rolling[0], [i]];
+map<int, vec<int>> m;
+for i in [1..100000]: { m[i % 10] = base; m.erase(i % 7); }
+println(total, " ", s, " ", rolling[1][0], " ", m.len());

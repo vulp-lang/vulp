@@ -1,0 +1,54 @@
+# 5.7: integer widths are rounded up to 8/16/32/64/128/256 bits; range ints; i128 / i256; unsigned; casts
+i21 a = 1000000;                 # stored as i32
+println(a * 2);
+u3 small = 200;                  # stored as u8
+println(small);
+small += 100;                    # wraps in 8 bits
+println(small);
+int<0..100> pct = 99;            # 8-bit signed storage
+pct += 30;                       # 129 wraps around in 8 bits
+println(pct);
+int<0..1000000007> m = 1000000007; # 32-bit storage
+println(m, " ", m + m);          # 32-bit arithmetic wraps
+int<-5..300> mid = 300;          # 16-bit storage
+println(mid * 100);              # 30000 fits in i16
+i100 h100 = 1;                   # i128 storage
+for i in [1..36]: h100 *= 10;
+println(h100);
+
+i128 big = 1;
+for i in [1..30]: big *= 10;
+println(big);
+println(big * big / 1000000000000000000000000000000);
+i128 f = 1;
+for i in [1..33]: f *= i;
+println(f);
+println(170141183460469231731687303715884105727);  # literal wider than 64 bits
+i256 h = 1;
+for i in [1..50]: h *= i;
+println(h);
+println(h / f, " ", h % 1000000007);
+println(-h);
+
+u64 u = 0;
+u -= 1;
+println(u, " ", u / 2, " ", u > 0);
+u256 maxu = 0;
+maxu -= 1;
+println(maxu);
+u128 sq = 18446744073709551615;
+println(sq * sq);
+int neg = -7;
+println(neg / 2, " ", neg % 2, " ", neg >> 1);
+u32 w = 4000000000;
+println(w, " ", w + w);           # arithmetic on narrow types is done in 64 bits ...
+u32 stored = w + w;               # ... and wraps when stored back into the narrow type
+println(stored);
+
+float x = 3.99;
+println(int(x), " ", int(-x), " ", i8(300), " ", u8(-1), " ", i32(u32(4294967295)));
+println(char(65), char(66), " ", int('a'), " ", float(7) / 2, " ", bool(5), " ", int(true), " ", bool(0));
+i8 tiny = 127;
+tiny++;
+println(tiny, " ", i16(-1) == -1, " ", u16(65535) + 1);   # ++ wraps in place; + promotes
+println(i64(i128(1) << 100 >> 98));

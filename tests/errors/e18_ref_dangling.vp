@@ -1,0 +1,20 @@
+# A `&` argument must not point into a container that the call could resize, replace or erase.
+# EXPECT-ERROR: cannot pass an element of 'all' by reference together with 'all' itself
+# EXPECT-ERROR: cannot pass an element of 'm' by reference together with 'm' itself
+# EXPECT-ERROR: together with the part of 'grid' that contains it
+# EXPECT-ERROR: cannot pass an element of global 'GV' by reference to 'elemref', which modifies 'GV'
+# EXPECT-ERROR: cannot pass global 'GV' by reference to 'outer'
+fn grow(vec<vec<int>>& all, vec<int>& a) { all.push([1]); a.push(7); }
+vec<vec<int>> all = [[1]];
+grow(all, all[0]);
+fn f(map<int, vec<int>>& m, vec<int>& e) { m.erase(1); e.push(5); }
+map<int, vec<int>> m;
+f(m, m[1]);
+fn g(vec<int>& row, int& cell) { row = []; cell = 1; }
+vec<vec<int>> grid = [[1, 2]];
+g(grid[0], grid[0][1]);
+vec<vec<int>> GV = [[1, 2], [3]];
+fn elemref(vec<int>& e) { GV = [[5]]; e.push(4); }
+elemref(GV[1]);
+fn outer(vec<vec<int>>& p) { elemref(p[0]); }
+outer(GV);

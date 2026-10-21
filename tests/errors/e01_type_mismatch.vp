@@ -1,0 +1,3 @@
+# EXPECT-ERROR: e01_type_mismatch.vp:3:9: semantic error: type mismatch in initialization of 'x': expected i64, found string
+# EXPECT-ERROR: 1 error(s); compilation stopped after the semantic analysis.
+int x = "hello";

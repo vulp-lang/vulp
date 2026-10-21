@@ -1,0 +1,11 @@
+# Many small testcases: maximum subarray sum (Kadane) of each array.
+TC: {
+    read int n;
+    read int[n] a;
+    int best = a[0], cur = 0;
+    for x in a: {
+        cur = max(cur + x, x);
+        best = max(best, cur);
+    }
+    println(best);
+}

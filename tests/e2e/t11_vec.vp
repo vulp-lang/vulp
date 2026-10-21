@@ -1,0 +1,72 @@
+# 5.11: vec<T>: push / pop / back / len / clear / sort, and value semantics (deep copies)
+vec<int> v;
+for i in [1..5]: v.push(i * i);
+println(v, " len=", v.len(), " back=", v.back());
+println(v.pop(), " ", v);
+v.clear();
+println(v.len(), " [", v, "]");
+v.push(7);
+println(v);
+
+vec<int> a = [5, 3, 9];
+vec<int> b = a;                 # deep copy
+b.push(1);
+b[0] = 50;
+println(a, " | ", b);
+
+vec<vec<int>> g;                # nested vecs
+g.push([1, 2]);
+g.push(a);
+g[0].push(3);
+vec<vec<int>> h = g;            # copies the inner vecs too
+h[1][0] = -1;
+h[0].clear();
+println(g);
+println("--");
+println(h);
+println("--");
+
+fn grow(vec<int> x) -> vec<int> {    # by-value parameter: the caller's vec is untouched
+    x.push(99);
+    return x;
+}
+vec<int> c = grow(a);
+println(a, " | ", c);
+
+vec<string> names = ["bob", "alice", "carol"];
+names.sort();
+println(names);
+vec<int> nums = [5, -2, 9, 0, -7];
+nums.sort();
+println(nums);
+vec<float> fl = [2.5, -1, 0.5];
+fl.sort();
+println(fl);
+vec<char> cs = ['d', 'a', 'c'];
+cs.sort();
+println(cs);
+u8[] bytes = [200, 3, 100];
+bytes.sort();
+println(bytes);
+
+int[] arr = [4, 2, 8];
+vec<int> fromarr = arr;         # arr <-> vec conversion copies
+fromarr.push(1);
+println(arr.len(), " ", fromarr.len());
+for x in nums: {                # for-in sees the live length
+    nums.push(0);
+    if nums.len() > 8: break;
+}
+println(nums.len());
+
+vec<vec<int>> rows;
+rows.push([1]);
+rows.push(rows[0]);             # the argument is copied before the push
+rows[1][0] = 2;
+println(rows);
+
+vec<string> st;
+string w = "x";
+st.push(w);
+w += "y";
+println(st, " ", w);

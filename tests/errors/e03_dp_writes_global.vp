@@ -1,0 +1,6 @@
+# EXPECT-ERROR: dp function 'f' must not modify global variables (its results are cached)
+int calls = 0;
+dp fn f(int n) -> int {
+    calls += 1;
+    return n;
+}

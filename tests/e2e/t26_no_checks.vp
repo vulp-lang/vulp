@@ -1,0 +1,7 @@
+# --no-checks removes bounds / division checks; correct programs behave the same
+# ARGS: --no-checks -O3
+int[10] a;
+for i in [0..9]: a[i] = i * 3;
+int s = 0;
+for i in [0..9]: s += a[i] / 3;
+println(s);

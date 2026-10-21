@@ -1,0 +1,25 @@
+# Reading a missing map key gives the zero value without inserting it;
+# writing (=, +=, ++, push, ...) inserts.
+map<int, int> m;
+println(m[5], " ", m.len());
+m[5] += 2;
+println(m[5], " ", m.len());
+map<string, vec<int>> g;
+println(g["x"].len(), " ", g.len());
+for v in g["y"]: println("never");
+println(g.len());
+g["x"].push(1);
+println(g["x"], " ", g.len());
+map<int, map<int, int>> nested;
+println(nested[1][2], " ", nested.len());
+nested[1][2] = 3;
+println(nested[1][2], " ", nested.len(), " ", nested[1].len());
+# a dp function may read a global map: reading never modifies it
+map<int, int> weight;
+weight[1] = 10;
+weight[3] = 30;
+dp fn total(int n) -> int {
+    if n == 0: return 0;
+    return weight[n] + total(n - 1);
+}
+println(total(5), " ", weight.len());

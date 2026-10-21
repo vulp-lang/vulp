@@ -1,0 +1,5 @@
+# Read n integers, sort them, print them on one line.
+read int n;
+read int[n] a;
+a.sort();
+println(a);

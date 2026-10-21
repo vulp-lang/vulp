@@ -1,0 +1,10 @@
+# Several independent errors are reported in one run.
+# EXPECT-ERROR: unknown variable 'y'
+# EXPECT-ERROR: operator '-' needs numbers, found string and i64
+# EXPECT-ERROR: function 'f' expects 2 argument(s), got 1
+# EXPECT-ERROR: 3 error(s)
+fn f(int a, int b) -> int { return a + b; }
+int x = y;
+string s = "a";
+int z = s - 1;
+int w = f(1);

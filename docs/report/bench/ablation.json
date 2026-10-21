@@ -1,0 +1,68 @@
+{
+  "checks": [
+    {
+      "problem": "sieve",
+      "label": "Vulp",
+      "checks_s": 0.05667796707712114,
+      "no_checks_s": 0.058732831152155995
+    },
+    {
+      "problem": "sort_io",
+      "label": "Vulp",
+      "checks_s": 0.1383061360102147,
+      "no_checks_s": 0.13761537615209818
+    },
+    {
+      "problem": "lcs",
+      "label": "Vulp (dp fn)",
+      "checks_s": 2.071438940940425,
+      "no_checks_s": 2.061753796879202
+    },
+    {
+      "problem": "lcs",
+      "label": "Vulp (table)",
+      "checks_s": 0.05979158589616418,
+      "no_checks_s": 0.05411683116108179
+    },
+    {
+      "problem": "dijkstra",
+      "label": "Vulp",
+      "checks_s": 0.12360763200558722,
+      "no_checks_s": 0.12157268892042339
+    },
+    {
+      "problem": "testcases",
+      "label": "Vulp",
+      "checks_s": 0.07187647395767272,
+      "no_checks_s": 0.07108482182957232
+    },
+    {
+      "problem": "map_count",
+      "label": "Vulp",
+      "checks_s": 0.5372016648761928,
+      "no_checks_s": 0.5517494920641184
+    }
+  ],
+  "widths": [
+    {
+      "variant": "int (64-bit) table",
+      "time_s": 0.06100732693448663,
+      "rss_mib": 72.0390625
+    },
+    {
+      "variant": "int (64-bit) table + --no-checks",
+      "time_s": 0.05470608780160546,
+      "rss_mib": 72.05078125
+    },
+    {
+      "variant": "i32 table",
+      "time_s": 0.042608180083334446,
+      "rss_mib": 37.57421875
+    },
+    {
+      "variant": "i32 table + --no-checks",
+      "time_s": 0.0364468430634588,
+      "rss_mib": 37.5390625
+    }
+  ]
+}

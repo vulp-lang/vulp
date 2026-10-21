@@ -1,0 +1,13 @@
+# Longest common subsequence, bottom-up table with a 32-bit element type.
+read string a, b;
+int n = a.len(), m = b.len();
+i32[n + 1][m + 1] dp;               # LCS <= 3000 fits in 32 bits: half the memory
+for i in [1..n]: {
+    for j in [1..m]: {
+        if a[i - 1] == b[j - 1]:
+            dp[i][j] = dp[i - 1][j - 1] + 1;
+        else:
+            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+    }
+}
+println(dp[n][m]);

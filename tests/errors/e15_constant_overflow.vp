@@ -1,0 +1,4 @@
+# EXPECT-ERROR: integer constant does not fit in u8
+# EXPECT-ERROR: integer constant does not fit in i8
+u8 a = 256;
+int<0..100> pct = 1000;

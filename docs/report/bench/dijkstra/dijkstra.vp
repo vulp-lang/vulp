@@ -1,0 +1,61 @@
+# Single-source shortest paths (Dijkstra) from vertex 1 of a directed graph.
+# Vulp V1 has no priority queue, so this uses a small binary heap of keys (dist << 17 | vertex).
+struct Edge { int to; int w; }
+
+fn heap_push(vec<int>& h, int x) {
+    h.push(x);
+    int i = h.len() - 1;
+    while i > 0: {
+        int p = (i - 1) / 2;
+        if h[p] <= h[i]: break;
+        int t = h[p]; h[p] = h[i]; h[i] = t;
+        i = p;
+    }
+}
+
+fn heap_pop(vec<int>& h) -> int {
+    int top = h[0];
+    int last = h.pop();
+    int n = h.len();
+    if n > 0: {
+        h[0] = last;
+        int i = 0;
+        while true: {
+            int l = 2 * i + 1, r = 2 * i + 2, s = i;
+            if l < n && h[l] < h[s]: s = l;
+            if r < n && h[r] < h[s]: s = r;
+            if s == i: break;
+            int t = h[s]; h[s] = h[i]; h[i] = t;
+            i = s;
+        }
+    }
+    return top;
+}
+
+read int n, m;
+vec<Edge>[n + 1] adj;
+for e in [1..m]: {
+    read int u, v, w;
+    adj[u].push(Edge(v, w));
+}
+int INF = 1 << 62;
+int[n + 1] dist;
+for i in [1..n]: dist[i] = INF;
+dist[1] = 0;
+vec<int> heap;
+heap_push(heap, 1);                     # (0 << 17) | 1
+while heap.len() > 0: {
+    int top = heap_pop(heap);
+    int d = top >> 17, u = top & 131071;
+    if d > dist[u]: continue;
+    for e in adj[u]: {
+        int nd = d + e.w;
+        if nd < dist[e.to]: {
+            dist[e.to] = nd;
+            heap_push(heap, (nd << 17) | e.to);
+        }
+    }
+}
+int reached = 0, total = 0;
+for i in [1..n]: if dist[i] < INF: { reached++; total += dist[i]; }
+println(reached, " ", total);

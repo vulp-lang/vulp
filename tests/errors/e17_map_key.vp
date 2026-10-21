@@ -1,0 +1,2 @@
+# EXPECT-ERROR: map keys must be integers (up to 64 bits), chars, bools or strings, found float
+map<float, int> m;

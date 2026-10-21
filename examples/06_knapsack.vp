@@ -1,0 +1,13 @@
+# 0/1 knapsack with a 2-D table. `dp` is an ordinary variable name.
+read int n, W;
+read int[n] weight;
+read int[n] value;
+int[n + 1][W + 1] dp;              # (n+1) x (W+1) zeroed table
+for i in [1..n]: {
+    for c in [0..W]: {
+        dp[i][c] = dp[i - 1][c];
+        if weight[i - 1] <= c:
+            dp[i][c] = max(dp[i][c], dp[i - 1][c - weight[i - 1]] + value[i - 1]);
+    }
+}
+println(dp[n][W]);

@@ -1,0 +1,5 @@
+# EXPECT-EXIT: 1
+# EXPECT-STDERR: unexpected end of input while reading an integer
+read int a;
+println(a);
+read int b;

@@ -1,0 +1,11 @@
+# Float output: the shortest decimal that reads back exactly; plain notation for decimal
+# exponents in [-4, 16), scientific otherwise (like Python's repr, without a trailing ".0").
+println(100.0, " ", 1500.0, " ", 100000.0, " ", 100000.25, " ", float(7) * 100);
+println(0.1, " ", 0.0001, " ", 0.00001, " ", 1e15, " ", 1e16, " ", -2.5e-8);
+println(123456789.125, " ", 1.0 / 3.0, " ", 2.0 / 3.0, " ", 1e300 * 10, " ", -0.0);
+read float x;
+read float y;
+println(x, " ", y, " ", x + y);
+println(string(1.5) + "|" + string(1e20) + "|" + string(-1500.0));
+float big = 1e308;
+println(big * 10, " ", -(big * 10), " ", big * 10 - big * 10);

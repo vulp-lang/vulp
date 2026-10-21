@@ -1,0 +1,5 @@
+# EXPECT-ERROR: unknown variable 'totl'
+# EXPECT-ERROR: unknown function 'solv'
+int total = 0;
+totl += 1;
+solv(total);

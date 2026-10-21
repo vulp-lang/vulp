@@ -1,0 +1,5 @@
+# EXPECT-EXIT: 1
+# EXPECT-STDERR: division by zero
+int z = 0;
+println(10 % 3);
+println(10 / z);

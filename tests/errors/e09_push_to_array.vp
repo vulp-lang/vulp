@@ -1,0 +1,3 @@
+# EXPECT-ERROR: cannot push to a fixed-size array (i64[]); use vec<i64>
+int[3] a;
+a.push(4);

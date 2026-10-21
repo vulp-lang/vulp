@@ -1,0 +1,25 @@
+# Structs have value semantics; vec<Struct> keeps them by value.
+struct Student {
+    string name;
+    int score;
+    vec<int> marks;
+}
+fn average(Student s) -> float {
+    int total = 0;
+    for m in s.marks: total += m;
+    return float(total) / s.marks.len();
+}
+read int n;
+vec<Student> class;
+for i in [1..n]: {
+    Student s;
+    read(s.name);
+    read int k;
+    read int[k] marks;
+    s.marks = marks;
+    for m in marks: s.score += m;
+    class.push(s);
+}
+Student best = class[0];
+for s in class: if s.score > best.score: best = s;
+println("best: ", best.name, " (", best.score, ", average ", average(best), ")");

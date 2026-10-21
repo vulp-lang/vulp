@@ -1,0 +1,4 @@
+# EXPECT-ERROR: 'break' outside of a loop
+# EXPECT-ERROR: 'continue' outside of a loop
+fn f() { break; }
+continue;

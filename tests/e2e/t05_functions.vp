@@ -1,0 +1,43 @@
+# 5.5: functions, recursion, mutual recursion, early return, void functions
+fn add(int a, int b) -> int { return a + b; }
+fn square(i32 x) -> i32 { return x * x; }
+fn fact(int n) -> int {
+    if n <= 1: return 1;
+    return n * fact(n - 1);
+}
+fn gcd(int a, int b) -> int {
+    while b != 0: {
+        int t = a % b;
+        a = b;          # parameters are ordinary local variables
+        b = t;
+    }
+    return a;
+}
+fn is_even(int n) -> bool {
+    if n == 0: return true;
+    return is_odd(n - 1);   # calls a function declared later
+}
+fn is_odd(int n) -> bool {
+    if n == 0: return false;
+    return is_even(n - 1);
+}
+fn greet(string who) {
+    println("hi ", who);
+    if who == "nobody": return;
+    println("bye ", who);
+}
+fn first_negative(int[] a) -> int {
+    for i in [0..a.len() - 1]: {
+        if a[i] < 0: return i;
+    }
+    return -1;
+}
+
+println(add(2, 3), " ", square(12), " ", fact(20), " ", gcd(84, 36));
+println(is_even(10), " ", is_odd(7), " ", is_even(3));
+greet("vulp");
+greet("nobody");
+println(first_negative([4, 2, -1, -5]), " ", first_negative([1, 2]));
+int depth = 0;
+fn deep(int n) -> int { if n == 0: return 0; return 1 + deep(n - 1); }
+println(deep(1000000));      # deep recursion runs on a large stack

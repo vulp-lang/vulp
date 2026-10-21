@@ -1,0 +1,13 @@
+# Integer widths: any iN / uN (1..256 bits) and range types int<lo..hi> are stored in the
+# next power-of-two width (8, 16, 32, 64, 128 or 256 bits).
+int<0..1000000007> mod_value = 1000000007;   # needs 31 bits -> stored as i32
+i21 small = 1000000;                          # stored as i32
+i256 f = 1;
+for i in [1..50]: f *= i;                     # 50! needs 215 bits
+println("50! = ", f);
+u128 two = 1;
+two <<= 127;
+println("2^127 = ", two);
+println(mod_value, " ", small * 3);
+read i128 x, y;                               # 128-bit input
+println(x * y);

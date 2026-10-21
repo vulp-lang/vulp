@@ -1,0 +1,12 @@
+# Sieve of Eratosthenes: count the primes <= n and print the first few.
+read int n;
+bool[n + 1] composite;
+vec<int> primes;
+for i in [2..n]: {
+    if composite[i]: continue;
+    primes.push(i);
+    for (int j = i * i; j <= n; j += i): composite[j] = true;
+}
+println(primes.len());
+for i in [0..min(9, primes.len() - 1)]: print(primes[i], " ");
+println();

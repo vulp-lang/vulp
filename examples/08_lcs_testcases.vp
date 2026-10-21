@@ -1,0 +1,13 @@
+# Longest common subsequence with a memoised recursive function.
+# `lcs` reads the global strings a and b, so Vulp clears its cache
+# automatically before every testcase.
+string a, b;
+dp fn lcs(int i, int j) -> int {
+    if i == a.len() || j == b.len(): return 0;
+    if a[i] == b[j]: return 1 + lcs(i + 1, j + 1);
+    return max(lcs(i + 1, j), lcs(i, j + 1));
+}
+TC: {
+    read(a, b);
+    println(lcs(0, 0));
+}

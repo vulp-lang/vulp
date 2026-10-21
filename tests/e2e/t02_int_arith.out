@@ -1,0 +1,10 @@
+22 12 85 3 2
+-3 -2
+false true false false true true
+false true false
+1 21 20 -18 1099511627776 4 -4
+7 9 2 3
+true true
+true
+short-circuit ok
+calls = 0

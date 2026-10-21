@@ -1,0 +1,4 @@
+# EXPECT-ERROR: parameters of dp function 'h' must be integers, chars or bools (they form the cache key), found string
+# EXPECT-ERROR: dp function 'k' must return a scalar value
+dp fn h(string s) -> int { return s.len(); }
+dp fn k(int n) -> vec<int> { vec<int> v; return v; }

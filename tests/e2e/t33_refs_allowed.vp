@@ -1,0 +1,32 @@
+# Common reference patterns that are accepted (and safe).
+fn swap(int& a, int& b) { int t = a; a = b; b = t; }
+fn relax(int& d, int nd) { if nd < d: d = nd; }
+fn add_edge(vec<int>[]& adj, int u, int v) { adj[u].push(v); adj[v].push(u); }
+fn dfs(int u, vec<int>[]& adj, bool[]& seen, vec<int>& order) {
+    seen[u] = true;
+    order.push(u);
+    for v in adj[u]: if !seen[v]: dfs(v, adj, seen, order);
+}
+fn push_both(vec<int>& a, vec<int>& b, int x) { a.push(x); b.push(x * 10); }
+int[] a = [5, 4, 3, 2, 1];
+swap(a[0], a[4]);
+swap(a[2], a[2]);
+int[] dist = [100, 100, 100];
+relax(dist[1], 7);
+relax(dist[1], 9);
+vec<int>[4] adj;
+add_edge(adj, 0, 1);
+add_edge(adj, 1, 2);
+add_edge(adj, 0, 3);
+bool[4] seen;
+vec<int> order;
+dfs(0, adj, seen, order);
+vec<vec<int>> rows = [[], []];
+push_both(rows[0], rows[1], 3);       # two different elements
+vec<int> same;
+push_both(same, same, 1);             # the same variable twice
+map<int, vec<int>> m;
+push_both(m[1], m[2], 4);
+println(a, " | ", dist, " | ", order, " | ", rows, " | ", same, " | ", m[1], " ", m[2]);
+u64 q = 5;
+println(q < -1, " ", max(q, -1) == q - 6);   # min/max convert like comparisons do

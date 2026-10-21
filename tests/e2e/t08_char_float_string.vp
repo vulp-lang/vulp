@@ -1,0 +1,42 @@
+# 5.8: chars, floats and strings
+char c = 'a';
+println(c, " ", c + 1, " ", char(c + 1), " ", c - 'a', " ", c < 'b');  # chars promote to int in arithmetic
+c += 2;
+println(c);
+
+string s = "hello";
+println(s, " ", s.len(), " ", s[0], s[4]);
+s[0] = 'j';                       # strings are mutable byte arrays
+println(s);
+string t = s + ", world";
+println(t, " ", t.len());
+t += '!';
+t += " :)";
+println(t);
+println("abc" < "abd", " ", "abc" == "abc", " ", "b" > "abc", " ", "" < "a", " ", "x" != "x");
+string empty;
+println("[", empty, "] ", empty.len());
+string built;
+for ch in ['a'..'z']: if ch % 2 == 0: built += ch;
+println(built);
+string copy = built;              # value semantics: copy is independent
+copy[0] = 'X';
+println(built, " ", copy);
+for ch in "hey": print(ch, "-");
+println();
+s.push('!');
+println(s, " ", s.back(), " ", s.pop(), " ", s);
+println(string(42), string('z'), string(-7), " ", string(42).len());
+string twice = "ab";
+twice += twice;                   # appending a string to itself
+println(twice);
+
+float f = 1.5;
+float g = f * 2 + 0.25;
+println(f, " ", g, " ", g / 3, " ", -f, " ", f < g, " ", 1.0 / 3.0);
+println(0.1 + 0.2, " ", 1e10, " ", 2.5e-3, " ", float(1) / 8);
+int n = 7;
+float avg = n / 2;                # integer division happens first
+float avg2 = float(n) / 2;
+println(avg, " ", avg2, " ", n * 1.0 / 2);
+println(abs(-2.5), " ", min(1.5, 0.5), " ", max(2, 3.5));

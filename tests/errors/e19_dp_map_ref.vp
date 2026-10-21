@@ -1,0 +1,5 @@
+# Passing g[n] by reference inserts n into g, so a dp function may not do it with a global map.
+# EXPECT-ERROR: dp function 'f' must not modify global variables
+map<int, int> g;
+fn rd(int& x) -> int { return x; }
+dp fn f(int n) -> int { return rd(g[n]); }

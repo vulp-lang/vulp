@@ -1,0 +1,51 @@
+# 5.13: map<K, V>: ordered maps with value semantics
+map<string, int> freq;
+string[] words = ["b", "a", "c", "a", "b", "a"];
+for w in words: freq[w] += 1;          # missing keys start from a zero value
+for k in freq: println(k, " ", freq[k]);   # keys iterate in sorted order
+println(freq.len(), " ", freq.has("a"), " ", freq.has("z"));
+freq.erase("b");
+println(freq.len(), " ", freq.has("b"));
+
+map<int, vec<int>> groups;
+for x in [1..10]: groups[x % 3].push(x);
+for k in groups: println(k, ": ", groups[k]);
+
+map<int, int> m;
+m[-5] = 1;
+m[100] = 2;
+m[0] = 3;
+for k in m: print(k, "=", m[k], " ");
+println();
+map<int, int> copy = m;                # deep copy
+copy[7] = 7;
+copy[0] = -1;
+println(m.len(), " ", copy.len(), " ", m[0], " ", copy[0]);
+
+map<char, int> cnt;
+for ch in "mississippi": cnt[ch]++;
+for k in cnt: print(k, cnt[k], " ");
+println();
+map<u64, int> um;                      # unsigned keys order as unsigned
+um[18446744073709551615] = 1;
+um[1] = 2;
+for k in um: print(k, " ");
+println();
+map<int, map<int, int>> nested;
+nested[1][2] = 3;
+nested[1][4] = 5;
+map<int, map<int, int>> nested2 = nested;
+nested2[1][2] = 30;
+println(nested[1][2], " ", nested2[1][2], " ", nested[1].len());
+map<string, vec<string>> mm;
+mm["x"].push("1");
+map<string, vec<string>> mm2 = mm;
+mm2["x"].push("2");
+println(mm["x"], " | ", mm2["x"]);
+m.clear();
+println(m.len());
+map<bool, int> bm;
+bm[true] = 1;
+bm[false] = 0;
+for k in bm: print(k, " ");
+println();

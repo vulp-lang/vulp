@@ -1,0 +1,6 @@
+# EXPECT-ERROR: cannot pass to reference parameter 'x' a temporary value
+# EXPECT-ERROR: reference parameter 'x' of 'inc' needs a variable of type i64, found i32
+fn inc(int& x) { x += 1; }
+inc(41);
+i32 small = 1;
+inc(small);

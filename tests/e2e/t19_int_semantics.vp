@@ -1,0 +1,29 @@
+# Integer corner cases have defined results.
+int mn = -9223372036854775807 - 1;
+println(mn / -1, " ", mn % -1, " ", mn * -1, " ", -mn);     # overflow wraps
+i8 e = -128;
+i8 q = e / i8(-1);
+println(q, " ", e / -1);
+int one = 1, sh = 64;
+println(one << sh, " ", one << 63, " ", -8 >> sh, " ", 8 >> sh, " ", one << -1);  # shifts out
+u64 big = 18446744073709551615;
+println(big >> 64, " ", big >> 63);
+println(int(1e30), " ", int(-1.0 / 0.0), " ", int(0.0 / 0.0), " ", u8(300.7), " ", u8(-5.0), " ", i8(-1000.0));
+# integers narrower than 64 bits compute in 64 bits and wrap only when stored back
+int<0..100000> r = 100000;
+int sq = r * r;
+println(sq);
+int<-5..5> s5 = -3;
+u3 u = 7;
+println(s5 * u);
+i32 big32 = 2000000000;
+i32 wrapped = big32 + big32;
+println(big32 + big32, " ", wrapped);
+println(string(i128(1) << 100), " ", string(true), " ", string(false), " ", string(u256(0) - 1));
+# min / max follow the same promotion rules as arithmetic and comparisons
+i8 a = -5;
+u8 b = 200;
+println(a < b, " ", max(a, b), " ", min(a, b));
+# float -> 256-bit integers saturate too
+float f = 2.5;
+println(i256(f), " ", u256(-f), " ", i256(f * 1e80), " ", i256(-f * 1e80), " ", u256(0.0 / 0.0));

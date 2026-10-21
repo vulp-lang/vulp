@@ -1,0 +1,13 @@
+# Longest common subsequence, bottom-up table (the hand-optimised version).
+read string a, b;
+int n = a.len(), m = b.len();
+int[n + 1][m + 1] dp;
+for i in [1..n]: {
+    for j in [1..m]: {
+        if a[i - 1] == b[j - 1]:
+            dp[i][j] = dp[i - 1][j - 1] + 1;
+        else:
+            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+    }
+}
+println(dp[n][m]);

@@ -1,0 +1,11 @@
+# Count occurrences with an ordered map: number of distinct values,
+# the most frequent value (smallest on ties) and its count.
+read int n;
+map<int, int> cnt;
+for i in [1..n]: {
+    read int x;
+    cnt[x] += 1;
+}
+int best = 0, value = 0;
+for k in cnt: if cnt[k] > best: { best = cnt[k]; value = k; }
+println(cnt.len(), " ", value, " ", best);

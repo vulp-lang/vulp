@@ -1,0 +1,6 @@
+# Input integers must fit the type they are read into.
+# EXPECT-EXIT: 1
+# EXPECT-STDERR: vulp runtime error (line 6): integer in the input does not fit in i8
+read int<0..100> small;              # stored as i8
+println(small);
+read int<0..100> big;

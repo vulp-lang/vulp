@@ -1,0 +1,7 @@
+# 5.1: the smallest programs
+println("Hello, world!");
+print("no newline");
+println();
+println("escapes: tab[\t] quote[\"] backslash[\\]");
+println(); # empty line
+println("multiple ", "pieces ", "joined");

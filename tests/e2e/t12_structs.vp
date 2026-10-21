@@ -1,0 +1,57 @@
+# 5.12: structs: declaration, constructor, fields, value semantics, arrays of structs, printing
+struct Point { int x, y; }
+struct Edge {
+    int to;
+    i32 w;
+    vec<int> tags;          # a field that owns heap memory
+}
+struct Node { int val; vec<Node> kids; }   # recursive through a vec
+
+Point p = Point(3, 4);      # constructor: all fields in order
+Point q;                    # zero-initialised
+q.x = 10;
+println(p.x, " ", p.y, " ", q.x, " ", q.y);
+println(p);                 # fields separated by spaces
+Point r = p;                # copy
+r.x = 99;
+println(p.x, " ", r.x);
+
+fn dist2(Point a, Point b) -> int {
+    int dx = a.x - b.x, dy = a.y - b.y;
+    return dx * dx + dy * dy;
+}
+fn moved(Point a, int d) -> Point {
+    a.x += d;               # modifies the copy only
+    return a;
+}
+println(dist2(p, Point(0, 0)), " ", moved(p, 5).x, " ", p.x);
+
+Edge e = Edge(2, 7, [1, 2]);
+Edge e2 = e;                # deep copy, including the vec field
+e2.tags.push(3);
+e2.tags[0] = 100;
+println(e.tags, " | ", e2.tags);
+
+Point[3] pts;               # array of structs
+for i in [0..2]: pts[i] = Point(i, i * i);
+pts[1].y += 10;
+println(pts);
+vec<Edge> adj;
+adj.push(Edge(1, 5, []));
+adj.push(e);
+adj[1].tags.push(9);
+println(adj[0].to, " ", adj[1].w, " ", adj[1].tags, " | e.tags=", e.tags);
+
+Node root = Node(1, []);
+root.kids.push(Node(2, []));
+root.kids.push(Node(3, []));
+root.kids[0].kids.push(Node(4, []));
+fn sum(Node n) -> int {
+    int s = n.val;
+    for k in n.kids: s += sum(k);
+    return s;
+}
+println(sum(root));
+struct Pair { string name; float score; }
+Pair best = Pair("vulp", 9.5);
+println(best.name, " ", best.score);

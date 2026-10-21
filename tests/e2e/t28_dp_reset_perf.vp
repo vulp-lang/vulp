@@ -1,0 +1,15 @@
+# A big testcase followed by many tiny ones: clearing the dp cache per testcase is O(1),
+# so the tiny testcases do not pay for the big table.
+# TIME-LIMIT: 3
+int[] a;
+dp fn best(int i) -> int {          # max sum of non-adjacent elements of a[i..]
+    if i >= a.len(): return 0;
+    return max(best(i + 1), a[i] + best(i + 2));
+}
+TC: {
+    read int n;
+    int[n] arr;
+    for i in [0..n - 1]: arr[i] = (i * 7919 + n) % 1000;
+    a = arr;
+    println(best(0));
+}

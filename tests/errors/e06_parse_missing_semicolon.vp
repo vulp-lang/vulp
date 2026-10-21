@@ -1,0 +1,4 @@
+# EXPECT-ERROR: e06_parse_missing_semicolon.vp:3:10: parser error: expected ';' after statement
+# EXPECT-ERROR: compilation stopped after the parser
+int x = 5
+println(x);

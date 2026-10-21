@@ -1,0 +1,13 @@
+# exit(code) flushes the output and stops the program
+# EXPECT-EXIT: 3
+fn check(int x) {
+    if x > 2: {
+        println("too big: ", x);
+        exit(3);
+    }
+}
+for i in [1..5]: {
+    check(i);
+    println(i);
+}
+println("never printed");

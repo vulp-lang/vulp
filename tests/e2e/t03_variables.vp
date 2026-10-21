@@ -1,0 +1,47 @@
+# 5.3: local & global variables, assignment, compound assignment, ++ / --
+int g = 10;            # global: visible to functions declared after it
+int counter;           # zero-initialised
+
+fn add_to_global(int v) {
+    g += v;
+    counter++;
+}
+
+add_to_global(5);
+add_to_global(7);
+println(g, " ", counter);
+
+int x = 3, y, z = x * 2;
+println(x, " ", y, " ", z);
+x = y = 42;            # assignment is an expression (right associative)
+println(x, " ", y);
+
+int c = 100;
+c += 5; println(c);
+c -= 10; println(c);
+c *= 3; println(c);
+c /= 4; println(c);
+c %= 50; println(c);
+c <<= 3; println(c);
+c >>= 1; println(c);
+c |= 1; println(c);
+c &= 6; println(c);
+c ^= 15; println(c);
+int old = c++;
+println(old, " ", c);
+old = c--;
+println(old, " ", c);
+
+{
+    int x = 7;         # shadows the outer x inside this block
+    println("inner x = ", x);
+}
+println("outer x = ", x);
+
+# a declaration inside a loop starts fresh every iteration
+for i in [1..3]: {
+    int fresh;
+    fresh += i;
+    print(fresh, " ");
+}
+println();

@@ -1,0 +1,4 @@
+# EXPECT-ERROR: TC blocks cannot appear inside functions
+# EXPECT-ERROR: TC blocks cannot be nested
+fn solve() { TC: {} }
+TC: { TC: {} }

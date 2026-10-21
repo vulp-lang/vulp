@@ -1,0 +1,33 @@
+# A value read from a variable stays valid even if the code that runs afterwards (index
+# expressions of the target or receiver) overwrites that variable: the right side of an
+# assignment and the arguments of a method call are evaluated first.
+string s = "hello";
+vec<string> v = ["ab", "cd"];
+fn g() -> int { s = "WORLDWORLDWORLD"; return 0; }
+v[g()] += s;
+println(v);
+vec<string> w = ["aaaa", "bbbb"];
+fn f() -> int { w[1] = "cccc"; return 0; }
+w[f()] += w[1];
+println(w);
+map<int, string> m;
+fn k() -> int { m.erase(2); m[2] = "NEW"; return 1; }
+m[1] = "x";
+m[2] = "old";
+m[k()] += m[2];
+println(m[1], " ", m[2]);
+map<string, int> base;
+base["hello"] = 1;
+vec<map<string, int>> ms = [base, base];
+string key = "hello";
+fn h() -> int { key = "WORLDWORLDWORLDWORLD"; return 1; }
+println(ms[h()].has(key));
+key = "hello";
+ms[h()].erase(key);
+println(ms[1].len(), " ", ms[0].len());
+struct S { string name; int n; }
+map<string, S> people;
+people["alpha_long_key_alpha_long_key"] = S("alpha_long_key_alpha_long_key", 1);
+people["beta"] = S("beta", 2);
+people.erase(people["alpha_long_key_alpha_long_key"].name);   # the key lives in the erased value
+println(people.len(), " ", people.has("alpha_long_key_alpha_long_key"));

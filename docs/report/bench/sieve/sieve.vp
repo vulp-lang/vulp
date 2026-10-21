@@ -1,0 +1,11 @@
+# Count the primes <= n and print the largest one (sieve of Eratosthenes).
+read int n;
+bool[n + 1] composite;
+int count = 0, last = 0;
+for i in [2..n]: {
+    if composite[i]: continue;
+    count++;
+    last = i;
+    for (int j = i * i; j <= n; j += i): composite[j] = true;
+}
+println(count, " ", last);

@@ -1,0 +1,19 @@
+# Two `&` parameters (or a parameter and a global) may be the same object at runtime, so an
+# element of one may not be passed together with the other.
+# EXPECT-ERROR: cannot pass an element of 'b' by reference together with 'a': 'a' and 'b' may be the same object
+# EXPECT-ERROR: cannot pass an element of 'G' by reference together with 'a'
+# EXPECT-ERROR: cannot pass an element of 'a' by reference together with 'G'
+fn g(vec<vec<int>>& c, vec<int>& e) { c.clear(); e.push(5); }
+fn f(vec<vec<int>>& a, vec<vec<int>>& b) { g(a, b[0]); }
+vec<vec<int>> v = [[1, 2, 3]];
+f(v, v);
+vec<vec<int>> G = [[1, 2, 3]];
+fn f2(vec<vec<int>>& a) { g(a, G[0]); }
+fn f3(vec<vec<int>>& a) { g(G, a[0]); }
+f2(G);
+f3(G);
+# recursive structs (tree nodes) are handled too
+# EXPECT-ERROR: cannot pass an element of 'q' by reference together with 'p'
+struct Node { vec<Node> kids; vec<int> vals; }
+fn set1(Node& n, int& e) { e = 1; }
+fn walk(Node& p, Node& q) { set1(p, q.vals[0]); }

@@ -1,0 +1,45 @@
+# 5.14: dp functions (memoised) and the TC: testcase block
+dp fn fib(i32 n) -> i32 { # dp added ahead of the function, marks it as "this function is a pure mathematical function, cache its values"
+    if n <= 1:
+        return n;
+    else: {
+        i32 a = fib(n - 1), b = fib(n - 2);
+        return a + b;
+    }
+}
+dp fn paths(int r, int c) -> u64 {         # two-argument cache key; exponential without the cache
+    if r == 0 || c == 0: return 1;
+    return paths(r - 1, c) + paths(r, c - 1);
+}
+dp fn count(char c, bool flag, i8 k) -> int {
+    if k == 0: return int(c) + int(flag);
+    return count(c, !flag, k - 1) + 1;
+}
+fn sq(int x) -> int { return x * x; }      # pure helpers may be called
+dp fn sumsq(int n) -> int {
+    if n == 0: return 0;
+    return sq(n) + sumsq(n - 1);
+}
+
+println(fib(46));
+println(paths(30, 30));
+println(count('a', true, 3));
+println(sumsq(100000));                    # 100000-deep recursion
+
+# A dp function may READ globals. Its cache is then cleared before every testcase,
+# so stale answers from the previous testcase are never reused.
+int[] arr;
+dp fn best(int i) -> int {                 # max sum of non-adjacent elements of arr[i..]
+    if i >= arr.len(): return 0;
+    return max(best(i + 1), arr[i] + best(i + 2));
+}
+TC: {                                      # reads the testcase count, runs the block that many times
+    read int n;
+    read int[n] a;
+    arr = a;
+    print(best(0), " ");
+    if n == 3: continue;                   # continue = next testcase
+    println("(n=", n, ")");
+}
+println();
+println("done");

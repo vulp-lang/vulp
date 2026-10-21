@@ -1,0 +1,9 @@
+# Longest common subsequence, written as the recurrence: `dp fn` memoises it.
+string a, b;
+dp fn lcs(int i, int j) -> int {
+    if i == a.len() || j == b.len(): return 0;
+    if a[i] == b[j]: return 1 + lcs(i + 1, j + 1);
+    return max(lcs(i + 1, j), lcs(i, j + 1));
+}
+read(a, b);
+println(lcs(0, 0));

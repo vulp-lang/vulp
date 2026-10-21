@@ -1,0 +1,6 @@
+# EXPECT-EXIT: 1
+# EXPECT-STDERR: pop() from an empty vec<i64>
+vec<int> v;
+v.push(1);
+println(v.pop());
+v.pop();

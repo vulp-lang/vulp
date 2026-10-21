@@ -1,0 +1,53 @@
+# 5.15: reference parameters (T&): modify the caller's variable / avoid copying containers
+fn inc(int& x) { x += 1; }
+fn fill(vec<int>& v, int n) { for i in [1..n]: v.push(i); }
+fn sum(int[]& a) -> int {
+    int s = 0;
+    for x in a: s += x;
+    return s;
+}
+fn swap(int& a, int& b) {
+    int t = a;
+    a = b;
+    b = t;
+}
+fn dfs(int u, vec<int>[]& adj, bool[]& seen, vec<int>& order) {
+    seen[u] = true;
+    order.push(u);
+    for v in adj[u]: if !seen[v]: dfs(v, adj, seen, order);
+}
+int x = 5;
+inc(x);
+inc(x);
+println(x);
+vec<int> v;
+fill(v, 4);
+println(v);
+int[] arr = [1..100];
+println(sum(arr));
+int a = 1, b = 2;
+swap(a, b);
+println(a, " ", b);
+int[3] cells;
+inc(cells[1]);           # elements and fields can be passed by reference too
+println(cells);
+struct P { int x; }
+P p;
+inc(p.x);
+println(p.x);
+vec<int>[5] adj;
+adj[0].push(1);
+adj[0].push(2);
+adj[1].push(3);
+adj[2].push(4);
+adj[3].push(0);
+bool[5] seen;
+vec<int> order;
+dfs(0, adj, seen, order);
+println(order);
+fn bump_all(map<string, int>& m) { for k in m: m[k] *= 10; }
+map<string, int> scores;
+scores["a"] = 1;
+scores["b"] = 2;
+bump_all(scores);
+println(scores["a"], " ", scores["b"]);
