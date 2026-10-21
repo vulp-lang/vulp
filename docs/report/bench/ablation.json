@@ -3,66 +3,66 @@
     {
       "problem": "sieve",
       "label": "Vulp",
-      "checks_s": 0.05667796707712114,
-      "no_checks_s": 0.058732831152155995
+      "checks_s": 0.040571138000814244,
+      "no_checks_s": 0.04101133500080323
     },
     {
       "problem": "sort_io",
       "label": "Vulp",
-      "checks_s": 0.1383061360102147,
-      "no_checks_s": 0.13761537615209818
+      "checks_s": 0.09950138500062167,
+      "no_checks_s": 0.0994166979980946
     },
     {
       "problem": "lcs",
       "label": "Vulp (dp fn)",
-      "checks_s": 2.071438940940425,
-      "no_checks_s": 2.061753796879202
+      "checks_s": 1.5546470759982185,
+      "no_checks_s": 1.5507400930000586
     },
     {
       "problem": "lcs",
       "label": "Vulp (table)",
-      "checks_s": 0.05979158589616418,
-      "no_checks_s": 0.05411683116108179
+      "checks_s": 0.04764171299757436,
+      "no_checks_s": 0.04276691799896071
     },
     {
       "problem": "dijkstra",
       "label": "Vulp",
-      "checks_s": 0.12360763200558722,
-      "no_checks_s": 0.12157268892042339
+      "checks_s": 0.0801496979984222,
+      "no_checks_s": 0.07961424300083308
     },
     {
       "problem": "testcases",
       "label": "Vulp",
-      "checks_s": 0.07187647395767272,
-      "no_checks_s": 0.07108482182957232
+      "checks_s": 0.05435131299964269,
+      "no_checks_s": 0.054032942000048934
     },
     {
       "problem": "map_count",
       "label": "Vulp",
-      "checks_s": 0.5372016648761928,
-      "no_checks_s": 0.5517494920641184
+      "checks_s": 0.2832645839989709,
+      "no_checks_s": 0.2781250389998604
     }
   ],
   "widths": [
     {
       "variant": "int (64-bit) table",
-      "time_s": 0.06100732693448663,
-      "rss_mib": 72.0390625
+      "time_s": 0.047708885998872574,
+      "rss_mib": 72.609375
     },
     {
       "variant": "int (64-bit) table + --no-checks",
-      "time_s": 0.05470608780160546,
-      "rss_mib": 72.05078125
+      "time_s": 0.04341589199975715,
+      "rss_mib": 72.6015625
     },
     {
       "variant": "i32 table",
-      "time_s": 0.042608180083334446,
-      "rss_mib": 37.57421875
+      "time_s": 0.032493606999196345,
+      "rss_mib": 38.109375
     },
     {
       "variant": "i32 table + --no-checks",
-      "time_s": 0.0364468430634588,
-      "rss_mib": 37.5390625
+      "time_s": 0.02743486200051848,
+      "rss_mib": 38.109375
     }
   ]
 }

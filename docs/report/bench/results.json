@@ -1,11 +1,11 @@
 {
   "env": {
-    "cpu": "AMD EPYC 9654P 96-Core Processor",
+    "cpu": "AMD Ryzen 9 8940HX with Radeon Graphics",
     "os": "Linux-6.17.0-35-generic-x86_64-with-glibc2.39",
     "g++": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
     "python": "CPython 3.12.3",
     "llvm": "18.1.3",
-    "vulpc": "build/vulpc"
+    "vulpc": "vulpc"
   },
   "runs": 7,
   "problems": {
@@ -16,26 +16,26 @@
           "label": "Vulp",
           "lang": "vulp",
           "source": "sieve/sieve.vp",
-          "compile_s": 0.09736132016405463,
+          "compile_s": 0.0484551299996383,
           "lines": 10,
           "tokens": 83,
-          "time_s": 0.055849431082606316,
-          "time_min_s": 0.055197397945448756,
-          "time_max_s": 0.06575515703298151,
-          "rss_mib": 21.05078125,
-          "jit_total_s": 0.08132544299587607
+          "time_s": 0.0408595549997699,
+          "time_min_s": 0.03989574400111451,
+          "time_max_s": 0.041371438001078786,
+          "rss_mib": 22.8671875,
+          "jit_total_s": 0.06066503599868156
         },
         {
           "label": "C++",
           "lang": "cpp",
           "source": "sieve/sieve.cpp",
-          "compile_s": 1.3910819140728563,
+          "compile_s": 0.9559223140022368,
           "lines": 17,
           "tokens": 143,
-          "time_s": 0.051468833815306425,
-          "time_min_s": 0.04966694116592407,
-          "time_max_s": 0.059694570023566484,
-          "rss_mib": 21.0625
+          "time_s": 0.03506211700005224,
+          "time_min_s": 0.034371914000075776,
+          "time_max_s": 0.035767528002907056,
+          "rss_mib": 22.2734375
         },
         {
           "label": "Python",
@@ -44,10 +44,10 @@
           "compile_s": null,
           "lines": 14,
           "tokens": 105,
-          "time_s": 0.6447540950030088,
-          "time_min_s": 0.6278579321224242,
-          "time_max_s": 0.7067472168710083,
-          "rss_mib": 46.578125
+          "time_s": 0.5320112859990331,
+          "time_min_s": 0.5234004209996783,
+          "time_max_s": 0.5487309750023996,
+          "rss_mib": 48.078125
         }
       ],
       "output_sha256": "88fce6e0605a1fc309afb2942a2ac702c5ddc4aa0a0e8c486f8204c1222a28dc"
@@ -59,26 +59,26 @@
           "label": "Vulp",
           "lang": "vulp",
           "source": "sort_io/sort_io.vp",
-          "compile_s": 0.08653672994114459,
+          "compile_s": 0.04863962899980834,
           "lines": 4,
           "tokens": 22,
-          "time_s": 0.13350155181251466,
-          "time_min_s": 0.13311592116951942,
-          "time_max_s": 0.13393267104402184,
-          "rss_mib": 10.54296875,
-          "jit_total_s": 0.1572214898187667
+          "time_s": 0.09973434399944381,
+          "time_min_s": 0.09964299900093465,
+          "time_max_s": 0.100027742999373,
+          "rss_mib": 11.3671875,
+          "jit_total_s": 0.11688739199962583
         },
         {
           "label": "C++",
           "lang": "cpp",
           "source": "sort_io/sort_io.cpp",
-          "compile_s": 1.4206683861557394,
+          "compile_s": 0.9984881499985931,
           "lines": 12,
           "tokens": 118,
-          "time_s": 0.1475915089249611,
-          "time_min_s": 0.1461507291533053,
-          "time_max_s": 0.1521149598993361,
-          "rss_mib": 10.5625
+          "time_s": 0.1106346599990502,
+          "time_min_s": 0.109813334998762,
+          "time_max_s": 0.11089413599984255,
+          "rss_mib": 10.7734375
         },
         {
           "label": "Python",
@@ -87,10 +87,10 @@
           "compile_s": null,
           "lines": 7,
           "tokens": 72,
-          "time_s": 0.6082995398901403,
-          "time_min_s": 0.6043013699818403,
-          "time_max_s": 0.6118538519367576,
-          "rss_mib": 185.70703125
+          "time_s": 0.4556921830007923,
+          "time_min_s": 0.44898115799878724,
+          "time_max_s": 0.48106147600265103,
+          "rss_mib": 188.109375
         }
       ],
       "output_sha256": "5a4382f17212abbfe01fe01c313159eb87b16162f8dcea8a1a7464800cd7159f"
@@ -102,51 +102,64 @@
           "label": "Vulp (dp fn)",
           "lang": "vulp",
           "source": "lcs/lcs_dp.vp",
-          "compile_s": 0.10239303694106638,
+          "compile_s": 0.04687908600317314,
           "lines": 8,
           "tokens": 108,
-          "time_s": 2.0648756159935147,
-          "time_min_s": 2.0550381608773023,
-          "time_max_s": 2.074775782879442,
-          "rss_mib": 674.7109375,
-          "jit_total_s": 2.098964717006311
+          "time_s": 1.5811644210007216,
+          "time_min_s": 1.56964792099825,
+          "time_max_s": 1.597296981002728,
+          "rss_mib": 675.671875,
+          "jit_total_s": 1.6043899040014367
         },
         {
           "label": "Vulp (table)",
           "lang": "vulp",
           "source": "lcs/lcs_table.vp",
-          "compile_s": 0.09398241201415658,
+          "compile_s": 0.054886527999769896,
           "lines": 12,
           "tokens": 138,
-          "time_s": 0.06043193000368774,
-          "time_min_s": 0.05981118604540825,
-          "time_max_s": 0.062103017000481486,
-          "rss_mib": 72.05078125,
-          "jit_total_s": 0.09152150596491992
+          "time_s": 0.04832224299752852,
+          "time_min_s": 0.04768885699741077,
+          "time_max_s": 0.05022789900249336,
+          "rss_mib": 72.609375,
+          "jit_total_s": 0.07352727699981187
+        },
+        {
+          "label": "Vulp (i32 table)",
+          "lang": "vulp",
+          "source": "lcs/lcs_table_i32.vp",
+          "compile_s": 0.056082085000525694,
+          "lines": 12,
+          "tokens": 138,
+          "time_s": 0.032905590000154916,
+          "time_min_s": 0.031886950997431995,
+          "time_max_s": 0.03320913700008532,
+          "rss_mib": 38.09765625,
+          "jit_total_s": 0.057171511001797626
         },
         {
           "label": "C++ (table)",
           "lang": "cpp",
           "source": "lcs/lcs.cpp",
-          "compile_s": 1.424035876058042,
+          "compile_s": 1.0024458830012009,
           "lines": 14,
           "tokens": 196,
-          "time_s": 0.032199778128415346,
-          "time_min_s": 0.03125894092954695,
-          "time_max_s": 0.03410256188362837,
-          "rss_mib": 37.56640625
+          "time_s": 0.024006316998566035,
+          "time_min_s": 0.02357653999933973,
+          "time_max_s": 0.02467520700156456,
+          "rss_mib": 37.5078125
         },
         {
           "label": "C++ (memo)",
           "lang": "cpp",
           "source": "lcs/lcs_memo.cpp",
-          "compile_s": 1.4590764420572668,
+          "compile_s": 1.0167412820010213,
           "lines": 19,
           "tokens": 212,
-          "time_s": 0.7249966459348798,
-          "time_min_s": 0.7229763139039278,
-          "time_max_s": 0.7457073430996388,
-          "rss_mib": 323.0234375
+          "time_s": 0.5791387440003746,
+          "time_min_s": 0.5716998039970349,
+          "time_max_s": 0.5915561620022345,
+          "rss_mib": 323.41015625
         },
         {
           "label": "Python",
@@ -155,10 +168,10 @@
           "compile_s": null,
           "lines": 16,
           "tokens": 158,
-          "time_s": 0.8333596028387547,
-          "time_min_s": 0.827970018144697,
-          "time_max_s": 0.8394507060293108,
-          "rss_mib": 9.08984375
+          "time_s": 0.644636442000774,
+          "time_min_s": 0.6408275959984167,
+          "time_max_s": 0.6600838919985108,
+          "rss_mib": 10.10546875
         }
       ],
       "output_sha256": "9f7a7a3ebce728347e9ff817d735ebd53c0299ad79d762cd1ae7d701b7c2d549"
@@ -170,26 +183,26 @@
           "label": "Vulp",
           "lang": "vulp",
           "source": "dijkstra/dijkstra.vp",
-          "compile_s": 0.1270620641298592,
+          "compile_s": 0.06456204299684032,
           "lines": 56,
           "tokens": 518,
-          "time_s": 0.12091165292076766,
-          "time_min_s": 0.11936714686453342,
-          "time_max_s": 0.12331836693920195,
-          "rss_mib": 19.5546875,
-          "jit_total_s": 0.16484551993198693
+          "time_s": 0.08263098600218655,
+          "time_min_s": 0.08175975300036953,
+          "time_max_s": 0.08434866699826671,
+          "rss_mib": 21.37109375,
+          "jit_total_s": 0.11650900899985572
         },
         {
           "label": "C++",
           "lang": "cpp",
           "source": "dijkstra/dijkstra.cpp",
-          "compile_s": 1.489038216881454,
+          "compile_s": 1.0546595759988122,
           "lines": 35,
           "tokens": 344,
-          "time_s": 0.12157294899225235,
-          "time_min_s": 0.12013956997543573,
-          "time_max_s": 0.12400537193752825,
-          "rss_mib": 21.05078125
+          "time_s": 0.08577035000053002,
+          "time_min_s": 0.0840265789993282,
+          "time_max_s": 0.09520872099892586,
+          "rss_mib": 21.015625
         },
         {
           "label": "Python",
@@ -198,10 +211,10 @@
           "compile_s": null,
           "lines": 26,
           "tokens": 266,
-          "time_s": 0.8138136100023985,
-          "time_min_s": 0.8072960150893778,
-          "time_max_s": 0.8229188800323755,
-          "rss_mib": 171.7578125
+          "time_s": 0.628045794001082,
+          "time_min_s": 0.6171716600001673,
+          "time_max_s": 0.6368207249979605,
+          "rss_mib": 173.73046875
         }
       ],
       "output_sha256": "25d875f4877adc74d43d02d0f74af2c878b8319ccc61fdf5ef0a35fe0f573572"
@@ -213,26 +226,26 @@
           "label": "Vulp",
           "lang": "vulp",
           "source": "testcases/testcases.vp",
-          "compile_s": 0.10622277413494885,
+          "compile_s": 0.052343208000820596,
           "lines": 10,
           "tokens": 59,
-          "time_s": 0.07142573595046997,
-          "time_min_s": 0.07111028116196394,
-          "time_max_s": 0.07241460401564837,
-          "rss_mib": 3.05078125,
-          "jit_total_s": 0.09906764002516866
+          "time_s": 0.05475605900210212,
+          "time_min_s": 0.054484134998347145,
+          "time_max_s": 0.054912449999392265,
+          "rss_mib": 3.8671875,
+          "jit_total_s": 0.07407683800192899
         },
         {
           "label": "C++",
           "lang": "cpp",
           "source": "testcases/testcases.cpp",
-          "compile_s": 1.376718180021271,
+          "compile_s": 0.9797470459998294,
           "lines": 20,
           "tokens": 134,
-          "time_s": 0.07302862894721329,
-          "time_min_s": 0.07180485595017672,
-          "time_max_s": 0.07381586404517293,
-          "rss_mib": 3.0703125
+          "time_s": 0.0553819820015633,
+          "time_min_s": 0.05483002699838835,
+          "time_max_s": 0.0557053550001001,
+          "rss_mib": 3.29296875
         },
         {
           "label": "Python",
@@ -241,10 +254,10 @@
           "compile_s": null,
           "lines": 18,
           "tokens": 150,
-          "time_s": 0.3827107900287956,
-          "time_min_s": 0.3819460980594158,
-          "time_max_s": 0.3856104260776192,
-          "rss_mib": 86.8046875
+          "time_s": 0.30513282299943967,
+          "time_min_s": 0.3016424069974164,
+          "time_max_s": 0.3130765319983766,
+          "rss_mib": 89.16796875
         }
       ],
       "output_sha256": "ac48e69628baae2511a8f0ee7d5cd3a7d6cb2b4cb8470f74ab90dadc5bced466"
@@ -256,26 +269,26 @@
           "label": "Vulp",
           "lang": "vulp",
           "source": "map_count/map_count.vp",
-          "compile_s": 0.09668418113142252,
+          "compile_s": 0.04980636999971466,
           "lines": 9,
           "tokens": 86,
-          "time_s": 0.4327792639378458,
-          "time_min_s": 0.40794302499853075,
-          "time_max_s": 0.4695308350492269,
-          "rss_mib": 22.5234375,
-          "jit_total_s": 0.4509216428268701
+          "time_s": 0.2750823579990538,
+          "time_min_s": 0.26511498900072183,
+          "time_max_s": 0.29339065499880235,
+          "rss_mib": 22.765625,
+          "jit_total_s": 0.30063285600044765
         },
         {
           "label": "C++",
           "lang": "cpp",
           "source": "map_count/map_count.cpp",
-          "compile_s": 1.4213087160605937,
+          "compile_s": 1.0153906200030178,
           "lines": 18,
           "tokens": 146,
-          "time_s": 0.29544220701791346,
-          "time_min_s": 0.29059537895955145,
-          "time_max_s": 0.3143589829560369,
-          "rss_mib": 15.07421875
+          "time_s": 0.19360362400038866,
+          "time_min_s": 0.1914001510012895,
+          "time_max_s": 0.20994782599882456,
+          "rss_mib": 15.515625
         },
         {
           "label": "Python",
@@ -284,10 +297,10 @@
           "compile_s": null,
           "lines": 14,
           "tokens": 113,
-          "time_s": 0.37322826008312404,
-          "time_min_s": 0.36863350099883974,
-          "time_max_s": 0.3896685161162168,
-          "rss_mib": 110.3671875
+          "time_s": 0.2752644119973411,
+          "time_min_s": 0.2709212449990446,
+          "time_max_s": 0.2841927930021484,
+          "rss_mib": 112.41796875
         }
       ],
       "output_sha256": "631aefdb3d798404cc912fa0e7a6b0ba73c6537ebc6e10e2fea986c65438c979"
